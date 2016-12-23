@@ -21,10 +21,11 @@ public class CommandSuggest implements Command {
 
     @Override
     public void execute(MovieBot bot, IDiscordClient client, String[] args, IGuild guild, IMessage message, boolean isPrivate) {
-        if (message.getChannel().getID().equals("256491839870337024") || message.getChannel().getID().equals("214763749867913216") || message.getChannel().getID().equals("256491839870337024")) {
+        if (message.getChannel().getID().equals("256491839870337024")) {
             try {
-                message.getChannel().pin(client.getMessageByID(message.getID()));
+                message.getChannel().pin(message);
             } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
