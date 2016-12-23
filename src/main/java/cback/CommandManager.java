@@ -31,7 +31,7 @@ public class CommandManager {
 
     private void initConfig() {
         try {
-            commandFile = new File(Util.botPath, "Mcommands.json");
+            commandFile = new File(Util.botPath, "commands.json");
             if (commandFile.exists()) {
                 JSONParser parser = new JSONParser();
                 FileReader reader = new FileReader(commandFile);

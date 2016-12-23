@@ -25,7 +25,7 @@ public class CommandStaffSummon implements Command {
     @Override
     public void execute(MovieBot bot, IDiscordClient client, String[] args, IGuild guild, IMessage message, boolean isPrivate) {
         if (!bot.getConfigManager().getConfigArray("cantsummon").contains(message.getAuthor().getID())) {
-            IChannel modLounge = client.getChannelByID("192444648545845248");
+            IChannel modLounge = client.getChannelByID("261746338075639810");
             List<IUser> mods = Util.getUsersByRole(MovieRoles.MOD.id);
 
             StringBuilder modMentions = new StringBuilder();

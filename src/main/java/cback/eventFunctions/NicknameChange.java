@@ -23,9 +23,6 @@ public class NicknameChange {
                 newName = event.getNewNickname().get();
             }
 
-            //Notify name change in #member-log
-            Util.sendMessage(guild.getChannelByID(MovieBot.MEMBERLOG_CHANNEL_ID), event.getUser().mention() + "'s nickname changed from ``" + oldName + "`` to ``" + newName + "``");
-
             //Sync nickname changes between servers
             if (guild.getID().equals("256248900124540929")) {
                 try {

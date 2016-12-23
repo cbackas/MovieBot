@@ -66,9 +66,9 @@ public class MemberChange {
         IUser user = event.getUser();
 
         //Mute Check
-       /* if (bot.getConfigManager().getConfigArray("muted").contains(event.getUser().getID())) {
-            Util.sendMessage(event.getGuild().getChannelByID("192444648545845248"), user + " is muted and left the server. Their mute will be applied again when/if they return.");
-        }*/
+        if (bot.getConfigManager().getConfigArray("muted").contains(event.getUser().getID())) {
+            Util.sendMessage(event.getGuild().getChannelByID("261746338075639810"), user + " is muted and left the server. Their mute will be applied again when/if they return.");
+        }
 
         //Leave Counter
         int left = Integer.parseInt(bot.getConfigManager().getConfigValue("left"));

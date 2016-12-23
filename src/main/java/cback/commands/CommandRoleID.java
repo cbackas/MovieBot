@@ -26,7 +26,7 @@ public class CommandRoleID implements Command {
 
     @Override
     public void execute(MovieBot bot, IDiscordClient client, String[] args, IGuild guild, IMessage message, boolean isPrivate) {
-        if (message.getAuthor().getRolesForGuild(guild).contains(guild.getRoleByID(MovieRoles.ADMIN.id))) {
+        if (message.getAuthor().getID().equals("73416411443113984")) {
             if (args.length == 1) {
                 String roleName = Arrays.stream(args).collect(Collectors.joining(" "));
                 List<IRole> serverRoles = guild.getRoles();

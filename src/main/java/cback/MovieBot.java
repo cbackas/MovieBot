@@ -143,7 +143,7 @@ public class MovieBot {
                 if (message.getAuthor().getRolesForGuild(loungeGuild).contains(loungeGuild.getRoleByID(MovieRoles.ADMIN.id)) || lowerCase.contains("discord.gg/lounge")) {
                 } else {
                     Util.sendPrivateMessage(message.getAuthor(), "Rule 3, Advertising your server is not allowed!");
-                    Util.sendMessage(client.getChannelByID("192444648545845248"), message.getAuthor().mention() + " __might__ have advertised their server in " + message.getChannel().mention() + ". Could a human please investigate?");
+                    Util.sendMessage(client.getChannelByID("261746338075639810"), message.getAuthor().mention() + " __might__ have advertised their server in " + message.getChannel().mention() + ". Could a human please investigate?");
                 }
             }
 
@@ -163,11 +163,6 @@ public class MovieBot {
         System.out.println("Logged in.");
     }
 
-    @EventSubscriber
-    public void onDisconnectEvent(DiscordDisconnectedEvent event) {
-        System.out.println("BOT DISCONNECTED");
-        System.out.println("Reason: " + event.getReason());
-    }
 
     public TraktManager getTraktManager() {
         return traktManager;
