@@ -29,6 +29,8 @@ public class CommandMuteAdd implements Command {
         List<IRole> userRoles = message.getAuthor().getRolesForGuild(guild);
         if (userRoles.contains(guild.getRoleByID(MovieRoles.STAFF.id))) {
             if (userRoles.contains(guild.getRoleByID(MovieRoles.ADMIN.id)) || userRoles.contains(guild.getRoleByID(MovieRoles.MOD.id)) ) {
+                Util.botLog(message);
+
                 List<String> mutedUsers = bot.getConfigManager().getConfigArray("muted");
 
                 if (args[0].equalsIgnoreCase("list")) {

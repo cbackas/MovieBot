@@ -26,6 +26,7 @@ public class CommandAnnounce implements Command {
             String announcement = message.getContent().split(" ", 2)[1];
             Util.sendAnnouncement(announcement);
 
+            Util.botLog(message);
             Util.deleteMessage(message);
         }
     }

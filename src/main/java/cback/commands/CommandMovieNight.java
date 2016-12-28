@@ -110,6 +110,7 @@ public class CommandMovieNight implements Command {
                         }
                     }
                 }
+                Util.botLog(message);
                 Util.deleteMessage(message);
             }
         }

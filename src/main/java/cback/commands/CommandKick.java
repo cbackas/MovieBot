@@ -60,6 +60,7 @@ public class CommandKick implements Command {
             } catch (Exception e) {
             }
 
+            Util.botLog(message);
             Util.deleteMessage(message);
         }
     }

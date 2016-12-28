@@ -60,6 +60,7 @@ public class CommandBan implements Command {
             } catch (Exception e) {
             }
 
+            Util.botLog(message);
             Util.deleteMessage(message);
         }
     }

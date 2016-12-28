@@ -39,6 +39,7 @@ public class CommandCommandRemove implements Command {
                 Util.sendMessage(message.getChannel(), "**Usage**: ``!removecommand commandname``");
             }
 
+            Util.botLog(message);
             Util.deleteMessage(message);
         }
     }

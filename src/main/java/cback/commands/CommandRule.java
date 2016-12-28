@@ -24,6 +24,8 @@ public class CommandRule implements Command {
     @Override
     public void execute(MovieBot bot, IDiscordClient client, String[] args, IGuild guild, IMessage message, boolean isPrivate) {
         if (Util.permissionCheck(message, "Staff")) {
+            Util.botLog(message);
+
             if (args.length == 1) {
 
                 String ruleNumber = args[0];

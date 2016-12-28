@@ -23,6 +23,7 @@ public class CommandCommandList implements Command {
     public void execute(MovieBot bot, IDiscordClient client, String[] args, IGuild guild, IMessage message, boolean isPrivate) {
         Util.sendMessage(message.getChannel(), "**Custom Commands**: \n" + bot.getCommandManager().getCommandList());
 
+        Util.botLog(message);
         Util.deleteMessage(message);
     }
 }

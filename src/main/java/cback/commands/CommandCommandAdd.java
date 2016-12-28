@@ -37,6 +37,7 @@ public class CommandCommandAdd implements Command {
                 Util.sendMessage(message.getChannel(), "**Usage**: ``!addcommand commandname \"custom response\"``");
             }
 
+            Util.botLog(message);
             Util.deleteMessage(message);
         }
     }

@@ -28,7 +28,9 @@ public class CommandLog implements Command {
 
             if (args.length >= 1) {
                 List<IRole> userRoles = message.getAuthor().getRolesForGuild(guild);
-                if (userRoles.contains(guild.getRoleByID(MovieRoles.ADMIN.id)) || userRoles.contains(guild.getRoleByID(MovieRoles.MOD.id))) {
+                if (Util.permissionCheck(message, MovieRoles.ADMIN.id) || Util.permissionCheck(message, MovieRoles.MOD.id)) {
+                    Util.botLog(message);
+
                     String finalText = message.getFormattedContent().split(" ", 2)[1];
                     Util.sendMessage(guild.getChannelByID(MovieBot.LOG_CHANNEL_ID), "```" + finalText + "\n- " + message.getAuthor().getDisplayName(guild) + "```");
                     Util.sendMessage(message.getChannel(), "Log added. " + guild.getChannelByID(MovieBot.LOG_CHANNEL_ID).mention());

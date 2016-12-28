@@ -24,6 +24,7 @@ public class CommandStaffSummonBan implements Command {
     @Override
     public void execute(MovieBot bot, IDiscordClient client, String[] args, IGuild guild, IMessage message, boolean isPrivate) {
         if (message.getAuthor().getRolesForGuild(guild).contains(guild.getRoleByID(MovieRoles.MOD.id))) {
+            Util.botLog(message);
             if (args.length == 2) {
                 if (args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("remove")) {
                     IUser user = Util.getUserFromMentionArg(args[1]);

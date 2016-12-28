@@ -51,6 +51,7 @@ public class CommandChannelRemove implements Command {
                 Util.sendMessage(message.getChannel(), "**ERROR**: Couldn't find channel to delete.");
             }
 
+            Util.botLog(message);
             Util.deleteMessage(message);
         }
     }

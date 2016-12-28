@@ -46,6 +46,7 @@ public class CommandChannelAdd implements Command {
                 });
             }
 
+            Util.botLog(message);
             Util.deleteMessage(message);
         }
     }
