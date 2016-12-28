@@ -36,7 +36,9 @@ public class MovieBot {
     public static final String ANNOUNCEMENT_CHANNEL_ID = "256249442456436747";
     public static final String GENERAL_CHANNEL_ID = "256248900124540929";
     public static final String LOG_CHANNEL_ID = "261737182543216640";
+    public static final String BOTLOG_WEBHOOK_URL = "https://ptb.discordapp.com/api/webhooks/263740625755701259/4md6yxY7cUxq5mS5LcfMtU1azF0RYurFdo-sl-YBbnkp-rhHTQais6xjE_ABXAsGdQG-/slack";
 
+    private long startTime;
 
     public static void main(String[] args) {
         new MovieBot();
@@ -183,6 +185,14 @@ public class MovieBot {
                 e.printStackTrace();
             }
         });
+    }
+
+    public String getUptime() {
+        long totalSeconds = (System.currentTimeMillis() - startTime) / 1000;
+        long seconds = totalSeconds % 60;
+        long minutes = (totalSeconds / 60) % 60;
+        long hours = (totalSeconds / 3600);
+        return (hours < 10 ? "0" + hours : hours) + "h " + (minutes < 10 ? "0" + minutes : minutes) + "m " + (seconds < 10 ? "0" + seconds : seconds) + "s";
     }
 
     public static MovieBot getInstance() {

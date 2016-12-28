@@ -8,11 +8,10 @@ import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.internal.DiscordClientImpl;
 import sx.blah.discord.api.internal.DiscordEndpoints;
 import sx.blah.discord.api.internal.DiscordUtils;
+import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.api.internal.json.objects.UserObject;
 import sx.blah.discord.handle.obj.*;
-import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.MissingPermissionsException;
-import sx.blah.discord.util.RequestBuffer;
+import sx.blah.discord.util.*;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -45,6 +44,18 @@ public class Util {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static IMessage sendEmbed(IChannel channel, EmbedObject embedObject) {
+        RequestBuffer.RequestFuture<IMessage> future = RequestBuffer.request(() -> {
+            try {
+                return new MessageBuilder(MovieBot.getInstance().getClient()).withEmbed(embedObject)
+                        .withChannel(channel).withContent("\u200B").send();
+            } catch (Exception e) {
+            }
+            return null;
+        });
+        return future.get();
     }
 
     public static IMessage sendBufferedMessage(IChannel channel, String message) {
@@ -98,6 +109,17 @@ public class Util {
         });
     }
 
+    public static void botLog(IMessage message) {
+        IDiscordClient client = MovieBot.getInstance().getClient();
+        try {
+            String text = "@" + message.getAuthor().getDisplayName(message.getGuild()) + " issued ``" + message.getFormattedContent() + "`` in " + message.getGuild().getName() + "/" + message.getChannel().mention();
+
+            Util.sendWebhook(MovieBot.BOTLOG_WEBHOOK_URL, client.getApplicationIconURL(), client.getApplicationName(), text);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void sendAnnouncement(String message) {
         try {
             Util.sendMessage(MovieBot.getInstance().getClient().getChannelByID(MovieBot.GENERAL_CHANNEL_ID), message);
@@ -132,17 +154,53 @@ public class Util {
         }
     }
 
-    public static void sendGlobalChat(String URL, IMessage message) {
-        String content = message.getFormattedContent();
+    public static void sendWebhook(String URL, String iconURL, String displayName, String message) {
         try {
             new Slack(URL)
-                    .icon(message.getAuthor().getAvatarURL())
-                    .displayName(message.getAuthor().getDisplayName(message.getGuild()))
-                    .push(new SlackMessage(content));
+                    .icon(iconURL)
+                    .displayName(displayName)
+                    .push(new SlackMessage(message));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+
+    //EMBEDBUILDER STUFF
+    private static String[] defaults = {
+            "6debd47ed13483642cf09e832ed0bc1b",
+            "322c936a8c8be1b803cd94861bdfa868",
+            "dd4dbc0016779df1378e7812eabaa04d",
+            "0e291f67c9274a1abdddeb3fd919cbaa",
+            "1cbd08c76f8af6dddce02c5138971129"
+    };
+
+    public static EmbedBuilder getEmbed() {
+        return new EmbedBuilder()
+                .withAuthorIcon(getAvatar(MovieBot.getInstance().getClient().getOurUser()))
+                .withAuthorUrl("https://github.com/ArsenArsen/FlareBot")
+                .withAuthorName(getTag(MovieBot.getInstance().getClient().getOurUser()));
+    }
+
+    public static String getTag(IUser user) {
+        return user.getName() + '#' + user.getDiscriminator();
+    }
+
+    public static EmbedBuilder getEmbed(IUser user) {
+        return getEmbed().withFooterIcon(getAvatar(user))
+                .withFooterText("Requested by @" + getTag(user));
+    }
+
+    public static String getAvatar(IUser user) {
+        return user.getAvatar() != null ? user.getAvatarURL() : getDefaultAvatar(user);
+    }
+
+    public static String getDefaultAvatar(IUser user) {
+        int discrim = Integer.parseInt(user.getDiscriminator());
+        discrim %= defaults.length;
+        return "https://discordapp.com/assets/" + defaults[discrim] + ".png";
+    }
+    //END EMBED BUILDER STUFF
 
     public static int toInt(long value) {
         try {
@@ -198,7 +256,7 @@ public class Util {
 
     public static List<IUser> getUsersByRole(String roleID) {
         try {
-            IGuild guild = MovieBot.getInstance().getClient().getGuildByID("256248900124540929");
+            IGuild guild = MovieBot.getInstance().getClient().getGuildByID("192441520178200577");
             IRole role = guild.getRoleByID(roleID);
 
             if (role != null) {
@@ -226,9 +284,11 @@ public class Util {
 
     public static List<IMessage> getSuggestions() {
         try {
-            IChannel channel = MovieBot.getInstance().getClient().getGuildByID("256248900124540929").getChannelByID("256491839870337024");
+            IChannel channel = MovieBot.getInstance().getClient().getGuildByID("192441520178200577").getChannelByID("192444470942236672");
 
             List<IMessage> messages = channel.getPinnedMessages();
+            List<IMessage> permM = Arrays.asList(channel.getMessageByID("228166713521340416"), channel.getMessageByID("236703936789217285"), channel.getMessageByID("246306837748514826"));
+            permM.forEach(messages::remove);
 
             return messages;
         } catch (Exception e) {
