@@ -131,7 +131,7 @@ public class Util {
 
     public static void errorLog(IMessage message, String text) {
         try {
-            Util.sendPrivateMessage(MovieBot.getInstance().getClient().getUserByID("73416411443113984"), text + " in ``#" + message.getChannel().getName() + "``");
+            Util.sendPrivateMessage(MovieBot.getInstance().getClient().getUserByID("73416411443113984"), text + " in  " + message.getChannel().mention());
         } catch (Exception e) {
             e.printStackTrace();
         }
