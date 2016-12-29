@@ -56,7 +56,6 @@ public class MovieBot {
         client.getDispatcher().registerListener(this);
         client.getDispatcher().registerListener(new ChannelChange(this));
         client.getDispatcher().registerListener(new MemberChange(this));
-        client.getDispatcher().registerListener(new NicknameChange());
 
         traktManager = new TraktManager(this);
 
