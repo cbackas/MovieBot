@@ -142,6 +142,8 @@ public class MovieBot {
     @EventSubscriber
     public void onReadyEvent(ReadyEvent event) {
         System.out.println("Logged in.");
+
+        startTime = System.currentTimeMillis();
     }
 
 

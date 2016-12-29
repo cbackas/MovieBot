@@ -284,11 +284,9 @@ public class Util {
 
     public static List<IMessage> getSuggestions() {
         try {
-            IChannel channel = MovieBot.getInstance().getClient().getGuildByID("192441520178200577").getChannelByID("192444470942236672");
+            IChannel channel = MovieBot.getInstance().getClient().getGuildByID("256248900124540929").getChannelByID("256491839870337024");
 
             List<IMessage> messages = channel.getPinnedMessages();
-            List<IMessage> permM = Arrays.asList(channel.getMessageByID("228166713521340416"), channel.getMessageByID("236703936789217285"), channel.getMessageByID("246306837748514826"));
-            permM.forEach(messages::remove);
 
             return messages;
         } catch (Exception e) {
