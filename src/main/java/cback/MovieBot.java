@@ -28,6 +28,7 @@ public class MovieBot {
     private TraktManager traktManager;
     private ConfigManager configManager;
     private CommandManager commandManager;
+    private Scheduler scheduler;
 
     private List<String> botAdmins = new ArrayList<>();
     public List<Command> registeredCommands = new ArrayList<>();
@@ -58,6 +59,7 @@ public class MovieBot {
         client.getDispatcher().registerListener(new MemberChange(this));
 
         traktManager = new TraktManager(this);
+        scheduler = new Scheduler(this);
 
         registerAllCommands();
 
