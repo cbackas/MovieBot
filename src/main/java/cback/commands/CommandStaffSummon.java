@@ -27,7 +27,7 @@ public class CommandStaffSummon implements Command {
         if (!bot.getConfigManager().getConfigArray("cantsummon").contains(message.getAuthor().getID())) {
             Util.botLog(message);
 
-            IChannel modLounge = client.getChannelByID("261746338075639810");
+            IChannel staff_hq = client.getChannelByID("256249393622024202");
             List<IUser> mods = Util.getUsersByRole(MovieRoles.MOD.id);
 
             StringBuilder modMentions = new StringBuilder();
@@ -36,7 +36,7 @@ public class CommandStaffSummon implements Command {
             }
 
             Util.sendMessage(message.getChannel(), "Staff have been notified and will come shortly.");
-            Util.sendMessage(modLounge, message.getAuthor().mention() + " has requested staff in " + message.getChannel().mention() + "\n" + modMentions.toString());
+            Util.sendMessage(staff_hq, message.getAuthor().mention() + " has requested staff in " + message.getChannel().mention() + "\n" + modMentions.toString());
 
             Util.deleteMessage(message);
         }
