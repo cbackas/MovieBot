@@ -297,7 +297,7 @@ public class Util {
 
     public static String getRule(String ruleID) {
         try {
-            String rule = MovieBot.getInstance().getClient().getChannelByID("251916332747063296").getMessageByID(ruleID).getContent();
+            String rule = MovieBot.getInstance().getClient().getChannelByID("263185370424803328").getMessageByID(ruleID).getContent();
 
             return rule;
         } catch (Exception e) {
