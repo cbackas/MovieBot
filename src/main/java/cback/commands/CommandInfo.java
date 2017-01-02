@@ -56,7 +56,7 @@ public class CommandInfo implements Command {
         embed.appendField("\u200B", "\u200B", false);
 
         embed.appendField("Made By: ", "cback#3986", true);
-        embed.appendField("Source: ", "[`GitHub`](https://github.com/cbackas/TVBot)", true);
+        embed.appendField("Source: ", "[`GitHub`](https://github.com/cbackas/MovieBot)", true);
 
         Util.sendEmbed(message.getChannel(), embed.withColor(85,50,176).build());
         Util.deleteMessage(message);
