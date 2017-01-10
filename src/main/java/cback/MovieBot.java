@@ -34,7 +34,7 @@ public class MovieBot {
     public List<Command> registeredCommands = new ArrayList<>();
 
     private static final Pattern COMMAND_PATTERN = Pattern.compile("^!([^\\s]+) ?(.*)", Pattern.CASE_INSENSITIVE);
-    public static final String ANNOUNCEMENT_CHANNEL_ID = "256249442456436747";
+    public static final String ANNOUNCEMENT_CHANNEL_ID = "263185392818323466";
     public static final String GENERAL_CHANNEL_ID = "256248900124540929";
     public static final String LOG_CHANNEL_ID = "261737182543216640";
     public static final String BOTLOG_WEBHOOK_URL = "https://ptb.discordapp.com/api/webhooks/263740625755701259/4md6yxY7cUxq5mS5LcfMtU1azF0RYurFdo-sl-YBbnkp-rhHTQais6xjE_ABXAsGdQG-/slack";

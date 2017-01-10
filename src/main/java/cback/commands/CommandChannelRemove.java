@@ -30,7 +30,7 @@ public class CommandChannelRemove implements Command {
                 for (IChannel c : mentionsC) {
                     try {
 
-                        Util.sendBufferedMessage(guild.getChannelByID(MovieBot.LOG_CHANNEL_ID), "```Deleted " + c.getName() + " channel.\n- " + message.getAuthor().getDisplayName(guild) + "```");
+                        Util.sendLog(message, "Deleted " + c.getName() + " channel.");
 
                         c.delete();
                     } catch (Exception e) {
@@ -42,7 +42,7 @@ public class CommandChannelRemove implements Command {
 
                     IChannel here = message.getChannel();
 
-                    Util.sendBufferedMessage(guild.getChannelByID(MovieBot.LOG_CHANNEL_ID), "```Deleted " + here.getName() + " channel.\n- " + message.getAuthor().getDisplayName(guild) + "```");
+                    Util.sendLog(message, "Deleted " + here.getName() + " channel.");
                     here.delete();
                 } catch (Exception e) {
                     e.printStackTrace();

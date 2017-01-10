@@ -76,7 +76,7 @@ public class CommandPurge implements Command {
                             .collect(Collectors.toList());
 
                     Util.bulkDelete(message.getChannel(), toDelete);
-                    Util.sendMessage(guild.getChannelByID(MovieBot.LOG_CHANNEL_ID), "```" + userToDelete.getDisplayName(guild) + "'s messages have been pruned in " + message.getChannel().getName() + ".\n- " + message.getAuthor().getDisplayName(guild) + "```");
+                    Util.sendLog(message, userToDelete.getDisplayName(guild) + "'s messages have been pruned in " + message.getChannel().getName() + ".");
 
                 } else { //this is a purge
 
@@ -86,7 +86,7 @@ public class CommandPurge implements Command {
                             .collect(Collectors.toList());
 
                     Util.bulkDelete(message.getChannel(), toDelete);
-                    Util.sendMessage(guild.getChannelByID(MovieBot.LOG_CHANNEL_ID), "```" + numberArg + " messages have been purged in " + message.getChannel().getName() + ".\n- " + message.getAuthor().getDisplayName(guild) + "```");
+                    Util.sendLog(message, numberArg + " messages have been purged in " + message.getChannel().getName() + ".");
 
                 }
 

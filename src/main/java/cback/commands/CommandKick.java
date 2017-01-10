@@ -7,6 +7,7 @@ import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.internal.DiscordUtils;
 import sx.blah.discord.handle.obj.*;
 
+import java.awt.*;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -43,7 +44,7 @@ public class CommandKick implements Command {
                         } else {
                             try {
                                 guild.kickUser(user);
-                                Util.sendMessage(logChannel, "```Kicked " + user.getDisplayName(guild) + " for " + reason + ".\n- " + mod.getDisplayName(guild) + "```");
+                                Util.sendLog(message, "Banned " + user.getDisplayName(guild) + "\n**Reason:** " + reason, Color.red);
                                 Util.sendMessage(message.getChannel(), user.getDisplayName(guild) + " has been kicked. Check " + guild.getChannelByID(MovieBot.LOG_CHANNEL_ID).mention() + " for more info");
                             } catch (Exception e) {
                                 e.printStackTrace();
