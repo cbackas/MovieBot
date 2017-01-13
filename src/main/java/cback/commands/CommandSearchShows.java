@@ -7,6 +7,7 @@ import com.uwetrottmann.trakt5.enums.Status;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.util.EmbedBuilder;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -38,17 +39,20 @@ public class CommandSearchShows implements Command {
             String country = showData.country + " - " + showData.language;
             String homepage = "<https://trakt.tv/shows/" + showData.ids.slug + ">\n<http://www.imdb.com/title/" + showData.ids.imdb + ">";
 
-            Util.sendMessage(message.getChannel(),
-                    title + "\n" +
-                            overview + "\n" +
-                            homepage + "\n" +
-                            "```\n" +
-                            "AIRS: " + airs + "\n" +
-                            "RUNTIME: " + runtime + " min\n" +
-                            "PREMIERED: " + premier + "\n" +
-                            "COUNTRY: " + country.toUpperCase() + "\n" +
-                            "GENRES: " + String.join(", ", showData.genres) + "\n" +
-                            "```\n");
+            EmbedBuilder embed = Util.getEmbed(message.getAuthor());
+
+            embed.withTitle(title);
+            embed.withDescription(overview);
+            embed.appendField("References:", homepage, true);
+            embed.appendField("\u200B", "\u200B", false);
+
+            embed.appendField("AIRS:", airs, true);
+            embed.appendField("RUNTIME:", runtime, true);
+            embed.appendField("PREMIERED:", premier, true);
+            embed.appendField("COUNTRY:", country.toUpperCase(), true);
+            embed.appendField("GENRES:", String.join(", ", showData.genres), true);
+
+            Util.sendEmbed(message.getChannel(), embed.build());
         } else {
             Util.sendMessage(message.getChannel(), "Error: Show not found");
             Util.errorLog(message, "Couldn't find show: " + showName);
