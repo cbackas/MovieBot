@@ -37,7 +37,6 @@ public class MemberChange {
 
         String welcomeMessage = "Welcome to " + event.getGuild().getName() + "! We primarily discuss movies but we also discuss other things on occasion. We are an English server.\n" +
                 "\n" +
-                "``cback.Rules``\n" +
                 "**Rule 1:** Stay Civil\n" +
                 "\n" +
                 "**Rule 2:** No Spam\n" +
