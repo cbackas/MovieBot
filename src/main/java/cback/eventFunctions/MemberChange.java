@@ -22,13 +22,13 @@ public class MemberChange {
         IUser user = event.getUser();
 
         //Mute Check
-        /*if (bot.getConfigManager().getConfigArray("muted").contains(event.getUser().getID())) {
+        if (bot.getConfigManager().getConfigArray("muted").contains(event.getUser().getID())) {
             try {
-                event.getUser().addRole(event.getGuild().getRoleByID("231269949635559424"));
+                event.getUser().addRole(event.getGuild().getRoleByID("261746338075639810"));
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }*/
+        }
 
         //Join Counter
         int joined = Integer.parseInt(bot.getConfigManager().getConfigValue("joined"));
