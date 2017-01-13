@@ -4,9 +4,8 @@ import cback.MovieBot;
 import cback.Util;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.ChannelCreateEvent;
-import sx.blah.discord.handle.impl.events.ChannelDeleteEvent;
-import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.ChannelCreateEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.RequestBuffer;
 
@@ -57,16 +56,6 @@ public class ChannelChange {
         }
 
 
-    }
-
-    @EventSubscriber
-    public void onDeleteChannelEvent(ChannelDeleteEvent event) {
-
-        List<String> permChannels = bot.getConfigManager().getConfigArray("permanentchannels");
-        if (permChannels.contains(event.getChannel().getID())) {
-            permChannels.remove(event.getChannel().getID());
-            bot.getConfigManager().setConfigValue("permanentchannels", permChannels);
-        }
     }
 
 }
