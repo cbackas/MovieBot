@@ -29,7 +29,6 @@ public class CommandBan implements Command {
         if (message.getAuthor().getRolesForGuild(guild).contains(guild.getRoleByID(MovieRoles.STAFF.id))) {
             String text = message.getContent();
             IUser mod = message.getAuthor();
-            IChannel logChannel = guild.getChannelByID("261737182543216640");
             try {
                DiscordUtils.checkPermissions(message.getChannel().getModifiedPermissions(mod), EnumSet.of(Permissions.BAN));
                 Pattern pattern = Pattern.compile("^!ban <@!?(\\d+)> ?(.+)?");
