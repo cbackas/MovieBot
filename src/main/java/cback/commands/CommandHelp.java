@@ -59,7 +59,9 @@ public class CommandHelp implements Command {
                     aliases = "\n*Aliases:* " + c.getAliases().toString();
                 }
 
-                if (!Collections.disjoint(roles, c.getPermissions()) || c.getPermissions() == null) {
+                if (c.getPermissions() == null) {
+                    embed.appendField(c.getSyntax(), c.getDescription() + aliases, false);
+                } else if (!Collections.disjoint(roles, c.getPermissions())) {
                     embed.appendField(c.getSyntax(), c.getDescription() + aliases, false);
                 }
 
