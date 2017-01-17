@@ -7,6 +7,7 @@ import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class CommandCommandRemove implements Command {
@@ -22,17 +23,17 @@ public class CommandCommandRemove implements Command {
 
     @Override
     public String getSyntax() {
-        return null;
+        return "!removecommand [commandName]";
     }
 
     @Override
     public String getDescription() {
-        return null;
+        return "Deletes the specified custom commands";
     }
 
     @Override
     public List<String> getPermissions() {
-        return null;
+        return Arrays.asList(MovieRoles.ADMIN.id);
     }
 
     @Override

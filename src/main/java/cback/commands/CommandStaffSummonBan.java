@@ -8,6 +8,7 @@ import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class CommandStaffSummonBan implements Command {
@@ -23,17 +24,17 @@ public class CommandStaffSummonBan implements Command {
 
     @Override
     public String getSyntax() {
-        return null;
+        return "!staffban [add|remove] @user";
     }
 
     @Override
     public String getDescription() {
-        return null;
+        return "Bans or unbans the specified user from using !staff";
     }
 
     @Override
     public List<String> getPermissions() {
-        return null;
+        return Arrays.asList(MovieRoles.MOD.id, MovieRoles.ADMIN.id);
     }
 
     @Override

@@ -29,17 +29,19 @@ public class CommandMovieNight implements Command {
 
     @Override
     public String getSyntax() {
-        return null;
+        return "!movienight set [pollID] [date]\n" +
+                "!movienight announce [movie]\n" +
+                "!movienight start [rabbitID]";
     }
 
     @Override
     public String getDescription() {
-        return null;
+        return "Sets and starts movienights";
     }
 
     @Override
     public List<String> getPermissions() {
-        return null;
+        return Arrays.asList(MovieRoles.MOVIENIGHT.id, MovieRoles.ADMIN.id);
     }
 
     @Override

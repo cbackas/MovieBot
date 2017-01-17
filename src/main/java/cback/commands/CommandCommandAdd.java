@@ -7,6 +7,7 @@ import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class CommandCommandAdd implements Command {
@@ -22,17 +23,17 @@ public class CommandCommandAdd implements Command {
 
     @Override
     public String getSyntax() {
-        return null;
+        return "!addcommand [commandName] [Response text]";
     }
 
     @Override
     public String getDescription() {
-        return null;
+        return "Adds a custom command that returns desired response text when you call it";
     }
 
     @Override
     public List<String> getPermissions() {
-        return null;
+        return Arrays.asList(MovieRoles.ADMIN.id);
     }
 
     @Override

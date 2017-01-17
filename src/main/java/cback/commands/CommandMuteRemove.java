@@ -10,6 +10,7 @@ import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.IUser;
 
 import java.awt.*;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,17 +28,17 @@ public class CommandMuteRemove implements Command {
 
     @Override
     public String getSyntax() {
-        return null;
+        return "!unmute @user";
     }
 
     @Override
     public String getDescription() {
-        return null;
+        return "Unmutes a user and sends a log message";
     }
 
     @Override
     public List<String> getPermissions() {
-        return null;
+        return Arrays.asList(MovieRoles.MOD.id, MovieRoles.ADMIN.id);
     }
 
     @Override

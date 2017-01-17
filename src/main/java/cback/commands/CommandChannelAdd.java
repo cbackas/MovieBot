@@ -27,17 +27,17 @@ public class CommandChannelAdd implements Command {
 
     @Override
     public String getSyntax() {
-        return null;
+        return "!addchannel [channelName] | [channelName]";
     }
 
     @Override
     public String getDescription() {
-        return null;
+        return "Creates a new channel with the desired name and logs it";
     }
 
     @Override
     public List<String> getPermissions() {
-        return null;
+        return Arrays.asList(MovieRoles.ADMIN.id);
     }
 
     @Override

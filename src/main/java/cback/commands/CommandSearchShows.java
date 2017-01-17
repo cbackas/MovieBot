@@ -27,12 +27,12 @@ public class CommandSearchShows implements Command {
 
     @Override
     public String getSyntax() {
-        return null;
+        return "!show [show name]";
     }
 
     @Override
     public String getDescription() {
-        return null;
+        return "Searches and returns information about the desired show";
     }
 
     @Override

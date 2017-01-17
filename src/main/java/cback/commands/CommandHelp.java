@@ -26,12 +26,12 @@ public class CommandHelp implements Command {
 
     @Override
     public String getSyntax() {
-        return null;
+        return "!help";
     }
 
     @Override
     public String getDescription() {
-        return null;
+        return "Returns a list of commands (you're looking at it right now)";
     }
 
     @Override

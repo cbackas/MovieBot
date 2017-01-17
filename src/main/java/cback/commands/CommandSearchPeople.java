@@ -26,12 +26,12 @@ public class CommandSearchPeople implements Command {
 
     @Override
     public String getSyntax() {
-        return null;
+        return "!person [name]";
     }
 
     @Override
     public String getDescription() {
-        return null;
+        return "Searches and returns information about the desired actor";
     }
 
     @Override

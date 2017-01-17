@@ -28,17 +28,17 @@ public class CommandPurge implements Command {
 
     @Override
     public String getSyntax() {
-        return null;
+        return "!prune @user [number?]";
     }
 
     @Override
     public String getDescription() {
-        return null;
+        return "Prunes a user's messages - if no number is specified then it will purge all messages";
     }
 
     @Override
     public List<String> getPermissions() {
-        return null;
+        return Arrays.asList(MovieRoles.MOD.id, MovieRoles.ADMIN.id);
     }
 
     @Override

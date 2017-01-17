@@ -1,11 +1,13 @@
 package cback.commands;
 
 import cback.MovieBot;
+import cback.MovieRoles;
 import cback.Util;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class CommandAnnounce implements Command {
@@ -21,17 +23,17 @@ public class CommandAnnounce implements Command {
 
     @Override
     public String getSyntax() {
-        return null;
+        return "!announce [announcement text]";
     }
 
     @Override
     public String getDescription() {
-        return null;
+        return "Sends a public announcement in both #announcements and #general";
     }
 
     @Override
     public List<String> getPermissions() {
-        return null;
+        return Arrays.asList(MovieRoles.ADMIN.id);
     }
 
     @Override

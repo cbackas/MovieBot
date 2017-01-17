@@ -26,12 +26,12 @@ public class CommandSearchMovies implements Command {
 
     @Override
     public String getSyntax() {
-        return null;
+        return "!movie [movie name]";
     }
 
     @Override
     public String getDescription() {
-        return null;
+        return "Searches and returns information about the desired movie";
     }
 
     @Override

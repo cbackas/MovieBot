@@ -24,12 +24,12 @@ public class CommandInfo implements Command {
 
     @Override
     public String getSyntax() {
-        return null;
+        return "!info";
     }
 
     @Override
     public String getDescription() {
-        return null;
+        return "Displays some statistics about the server and the bot";
     }
 
     @Override
@@ -41,7 +41,6 @@ public class CommandInfo implements Command {
     public void execute(MovieBot bot, IDiscordClient client, String[] args, IGuild guild, IMessage message, boolean isPrivate) {
         int userCount = guild.getTotalMemberCount();
         int oldUserCount = Integer.valueOf(bot.getConfigManager().getConfigValue("userCount"));
-        int channelCount = guild.getChannels().size();
 
         int newCount = userCount - oldUserCount;
         String leaveJoin = " (-" + bot.getConfigManager().getConfigValue("left") + " +" + bot.getConfigManager().getConfigValue("joined") + ")";

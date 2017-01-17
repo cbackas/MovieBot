@@ -21,12 +21,12 @@ public class CommandSuggest implements Command {
 
     @Override
     public String getSyntax() {
-        return null;
+        return "!suggest [idea]";
     }
 
     @Override
     public String getDescription() {
-        return null;
+        return "Automagically pins your idea in the #suggestions channel";
     }
 
     @Override

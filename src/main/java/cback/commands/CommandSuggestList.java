@@ -22,12 +22,12 @@ public class CommandSuggestList implements Command{
 
     @Override
     public String getSyntax() {
-        return null;
+        return "!seesuggestions";
     }
 
     @Override
     public String getDescription() {
-        return null;
+        return "Returns a list of active suggestions in #suggestions";
     }
 
     @Override

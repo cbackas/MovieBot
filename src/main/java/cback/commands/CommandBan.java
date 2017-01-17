@@ -8,6 +8,7 @@ import sx.blah.discord.api.internal.DiscordUtils;
 import sx.blah.discord.handle.obj.*;
 
 import java.awt.*;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -26,17 +27,17 @@ public class CommandBan implements Command {
 
     @Override
     public String getSyntax() {
-        return null;
+        return "!ban @user [reason]";
     }
 
     @Override
     public String getDescription() {
-        return null;
+        return "Bans a user from the server";
     }
 
     @Override
     public List<String> getPermissions() {
-        return null;
+        return Arrays.asList(MovieRoles.MOD.id, MovieRoles.ADMIN.id);
     }
 
     @Override

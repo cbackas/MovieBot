@@ -8,6 +8,7 @@ import sx.blah.discord.api.internal.DiscordUtils;
 import sx.blah.discord.handle.obj.*;
 
 import java.awt.*;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -26,17 +27,17 @@ public class CommandKick implements Command {
 
     @Override
     public String getSyntax() {
-        return null;
+        return "!kick @user [reason]";
     }
 
     @Override
     public String getDescription() {
-        return null;
+        return "Kicks a user from the server";
     }
 
     @Override
     public List<String> getPermissions() {
-        return null;
+        return Arrays.asList(MovieRoles.MOD.id, MovieRoles.ADMIN.id);
     }
 
     @Override
@@ -44,7 +45,6 @@ public class CommandKick implements Command {
         if (message.getAuthor().getRolesForGuild(guild).contains(guild.getRoleByID(MovieRoles.STAFF.id))) {
             String text = message.getContent();
             IUser mod = message.getAuthor();
-            IChannel logChannel = guild.getChannelByID("261737182543216640");
             try {
                 DiscordUtils.checkPermissions(message.getChannel().getModifiedPermissions(mod), EnumSet.of(Permissions.KICK));
                 Pattern pattern = Pattern.compile("^!kick <@!?(\\d+)> ?(.+)?");

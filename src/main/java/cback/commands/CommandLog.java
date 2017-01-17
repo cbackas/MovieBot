@@ -24,17 +24,17 @@ public class CommandLog implements Command {
 
     @Override
     public String getSyntax() {
-        return null;
+        return "!addlog [log message]";
     }
 
     @Override
     public String getDescription() {
-        return null;
+        return "Creates a new log in #logs with your desired message";
     }
 
     @Override
     public List<String> getPermissions() {
-        return null;
+        return Arrays.asList(MovieRoles.HELPER.id, MovieRoles.MOD.id, MovieRoles.ADMIN.id);
     }
 
     @Override

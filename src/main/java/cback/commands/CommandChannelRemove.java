@@ -24,17 +24,17 @@ public class CommandChannelRemove implements Command {
 
     @Override
     public String getSyntax() {
-        return null;
+        return "!deletechannel #channel";
     }
 
     @Override
     public String getDescription() {
-        return null;
+        return "Deletes a channel and logs it";
     }
 
     @Override
     public List<String> getPermissions() {
-        return null;
+        return Arrays.asList(MovieRoles.ADMIN.id);
     }
 
     @Override

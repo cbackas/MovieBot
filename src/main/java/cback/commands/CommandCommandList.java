@@ -21,12 +21,12 @@ public class CommandCommandList implements Command {
 
     @Override
     public String getSyntax() {
-        return null;
+        return "!listcommands";
     }
 
     @Override
     public String getDescription() {
-        return null;
+        return "Returns a list of custom commands on the server";
     }
 
     @Override

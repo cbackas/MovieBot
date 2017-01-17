@@ -9,6 +9,7 @@ import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class CommandStaffSummon implements Command {
@@ -19,17 +20,17 @@ public class CommandStaffSummon implements Command {
 
     @Override
     public List<String> getAliases() {
-        return null;
+        return Arrays.asList("summon");
     }
 
     @Override
     public String getSyntax() {
-        return null;
+        return "!staff";
     }
 
     @Override
     public String getDescription() {
-        return null;
+        return "Requests moderators to come to the channel you are in, permission can be taken away";
     }
 
     @Override
