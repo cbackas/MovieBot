@@ -20,6 +20,16 @@ public class CommandTrigger implements Command {
     }
 
     @Override
+    public String getSyntax() {
+        return null;
+    }
+
+    @Override
+    public String getDescription() {
+        return null;
+    }
+
+    @Override
     public void execute(MovieBot bot, IDiscordClient client, String[] args, IGuild guild, IMessage message, boolean isPrivate) {
         if (message.getAuthor().getID().equals("73416411443113984")) {
             String fullRule = MovieBot.getInstance().getClient().getChannelByID("251916332747063296").getMessageByID("251922232069193728").getContent();

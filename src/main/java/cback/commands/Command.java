@@ -12,7 +12,10 @@ public interface Command {
 
     List<String> getAliases();
 
-    void execute(MovieBot bot, IDiscordClient client, String[] args, IGuild guild, IMessage message, boolean isPrivate);
+    String getSyntax();
 
+    String getDescription();
+
+    void execute(MovieBot bot, IDiscordClient client, String[] args, IGuild guild, IMessage message, boolean isPrivate);
 }
 

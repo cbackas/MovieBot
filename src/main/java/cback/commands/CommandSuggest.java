@@ -20,6 +20,16 @@ public class CommandSuggest implements Command {
     }
 
     @Override
+    public String getSyntax() {
+        return null;
+    }
+
+    @Override
+    public String getDescription() {
+        return null;
+    }
+
+    @Override
     public void execute(MovieBot bot, IDiscordClient client, String[] args, IGuild guild, IMessage message, boolean isPrivate) {
         if (message.getChannel().getID().equals("256491839870337024")) {
             try {

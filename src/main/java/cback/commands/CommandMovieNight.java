@@ -28,6 +28,16 @@ public class CommandMovieNight implements Command {
     }
 
     @Override
+    public String getSyntax() {
+        return null;
+    }
+
+    @Override
+    public String getDescription() {
+        return null;
+    }
+
+    @Override
     public void execute(MovieBot bot, IDiscordClient client, String[] args, IGuild guild, IMessage message, boolean isPrivate) {
         ConfigManager configManager = bot.getConfigManager();
         IUser author = message.getAuthor();
