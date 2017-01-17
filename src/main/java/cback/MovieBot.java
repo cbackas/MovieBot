@@ -31,7 +31,7 @@ public class MovieBot {
     private Scheduler scheduler;
 
     private List<String> botAdmins = new ArrayList<>();
-    public List<Command> registeredCommands = new ArrayList<>();
+    public  static List<Command> registeredCommands = new ArrayList<>();
 
     private static final Pattern COMMAND_PATTERN = Pattern.compile("^!([^\\s]+) ?(.*)", Pattern.CASE_INSENSITIVE);
     public static final String ANNOUNCEMENT_CHANNEL_ID = "263185392818323466";

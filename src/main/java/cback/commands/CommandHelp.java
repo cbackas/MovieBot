@@ -7,9 +7,13 @@ import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IRole;
+import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.EmbedBuilder;
 import sx.blah.discord.util.MessageBuilder;
+import sx.blah.discord.util.RequestBuffer;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -96,25 +100,41 @@ public class CommandHelp implements Command {
                     "!movienight announce [movie]           //deletes poll and announces movie\n" +
                     "!movienight start [rabbitID]           //announces movienight start and links to room";
 
+
     @Override
     public void execute(MovieBot bot, IDiscordClient client, String[] args, IGuild guild, IMessage message, boolean isPrivate) {
-        guild = client.getGuildByID("256248900124540929");
-        List<IRole> userRoles = message.getAuthor().getRolesForGuild(guild);
-        String finalHelp = userCommands;
-        String variation = Arrays.stream(args).collect(Collectors.joining(" "));
-        if (variation.equalsIgnoreCase("staff") && userRoles.contains(guild.getRoleByID(MovieRoles.STAFF.id))) {
-            finalHelp = staffCommands;
+
+        EmbedBuilder embed = Util.getEmbed();
+        embed.withTitle("Commands:");
+
+        List<String> roles = message.getAuthor().getRolesForGuild(guild).stream().map(role -> role.getID()).collect(Collectors.toList());
+        for (Command c : MovieBot.registeredCommands) {
+
+            if (c.getDescription() != null) {
+
+                String aliases = "";
+                if (c.getAliases() != null) {
+                    aliases = "\n**Aliases:**\n" + c.getAliases().toString();
+                }
+
+                if (c.getPermissions() == null) {
+                    embed.appendField(c.getSyntax(), c.getDescription() + aliases, false);
+                } else if (!Collections.disjoint(roles, c.getPermissions())) {
+                    embed.appendField(c.getSyntax(), c.getDescription() + aliases, false);
+                }
+
+            }
+
         }
-        if (variation.equalsIgnoreCase("admin") && userRoles.contains(guild.getRoleByID(MovieRoles.ADMIN.id))) {
-            finalHelp = adminCommands;
-        }
-        if (variation.equalsIgnoreCase("movienight") || variation.equalsIgnoreCase("movie night") && userRoles.contains(guild.getRoleByID(MovieRoles.MOVIENIGHT.id))) {
-            finalHelp = movieCommands;
-        }
+
+        embed.withFooterText("Staff commands excluded for regular users");
+
         try {
-            new MessageBuilder(client).withChannel(message.getAuthor().getOrCreatePMChannel()).appendQuote("cback.MovieBot's Commands:").appendCode("xl", finalHelp).appendQuote("Staff commands excluded for regular users").send();
+            Util.sendEmbed(message.getAuthor().getOrCreatePMChannel(), embed.withColor(85, 50, 176).build());
         } catch (Exception e) {
+            e.printStackTrace();
         }
+
         Util.deleteMessage(message);
 
     }
