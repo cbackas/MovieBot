@@ -35,6 +35,11 @@ public class CommandRoleID implements Command {
     }
 
     @Override
+    public List<String> getPermissions() {
+        return null;
+    }
+
+    @Override
     public void execute(MovieBot bot, IDiscordClient client, String[] args, IGuild guild, IMessage message, boolean isPrivate) {
         if (message.getAuthor().getID().equals("73416411443113984")) {
             Util.botLog(message);

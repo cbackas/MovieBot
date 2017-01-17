@@ -34,6 +34,11 @@ public class CommandHelp implements Command {
         return null;
     }
 
+    @Override
+    public List<String> getPermissions() {
+        return null;
+    }
+
     static final String userCommands =
             "-----------------------------commands-----------------------------\n" +
                     "!help [staff|movienight|admin]         //shows a list of commands\n" +

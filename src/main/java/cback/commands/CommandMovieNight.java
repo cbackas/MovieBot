@@ -38,6 +38,11 @@ public class CommandMovieNight implements Command {
     }
 
     @Override
+    public List<String> getPermissions() {
+        return null;
+    }
+
+    @Override
     public void execute(MovieBot bot, IDiscordClient client, String[] args, IGuild guild, IMessage message, boolean isPrivate) {
         ConfigManager configManager = bot.getConfigManager();
         IUser author = message.getAuthor();

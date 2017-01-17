@@ -30,6 +30,11 @@ public class CommandSuggest implements Command {
     }
 
     @Override
+    public List<String> getPermissions() {
+        return null;
+    }
+
+    @Override
     public void execute(MovieBot bot, IDiscordClient client, String[] args, IGuild guild, IMessage message, boolean isPrivate) {
         if (message.getChannel().getID().equals("256491839870337024")) {
             try {

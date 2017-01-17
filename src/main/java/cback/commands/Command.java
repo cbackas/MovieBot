@@ -16,6 +16,8 @@ public interface Command {
 
     String getDescription();
 
+    List<String> getPermissions();
+
     void execute(MovieBot bot, IDiscordClient client, String[] args, IGuild guild, IMessage message, boolean isPrivate);
 }
 

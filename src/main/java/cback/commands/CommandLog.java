@@ -33,6 +33,11 @@ public class CommandLog implements Command {
     }
 
     @Override
+    public List<String> getPermissions() {
+        return null;
+    }
+
+    @Override
     public void execute(MovieBot bot, IDiscordClient client, String[] args, IGuild guild, IMessage message, boolean isPrivate) {
         if (message.getAuthor().getRolesForGuild(guild).contains(guild.getRoleByID(MovieRoles.STAFF.id))) {
 
