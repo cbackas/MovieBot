@@ -8,6 +8,7 @@ import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.shard.DisconnectedEvent;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.modules.Configuration;
@@ -148,6 +149,15 @@ public class MovieBot {
         startTime = System.currentTimeMillis();
     }
 
+    @EventSubscriber
+    public void onDisconnectEvent(DisconnectedEvent event) {
+        Util.sendWebhook(
+                "https://ptb.discordapp.com/api/webhooks/276878075944370177/lyhmQffmqwILMc7vawjk3g2tG-1XCV_oqSShvWq4ugjIQQ0X69ffp_cGaruoZ265w72S/slack",
+                client.getApplicationIconURL(),
+                client.getApplicationName(),
+                client.getUserByID("73416411443113984").mention() + " MovieBot has gone offline."
+        );
+    }
 
     public TraktManager getTraktManager() {
         return traktManager;
