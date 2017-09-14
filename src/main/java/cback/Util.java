@@ -1,50 +1,205 @@
 package cback;
 
-import com.google.gson.JsonSyntaxException;
-import in.ashwanthkumar.slack.webhook.Slack;
-import in.ashwanthkumar.slack.webhook.SlackMessage;
-import org.apache.http.message.BasicNameValuePair;
+import cback.commands.Command;
 import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.api.internal.DiscordClientImpl;
-import sx.blah.discord.api.internal.DiscordEndpoints;
-import sx.blah.discord.api.internal.DiscordUtils;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
-import sx.blah.discord.api.internal.json.objects.UserObject;
 import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.*;
 
 import java.awt.*;
-import java.io.File;
-import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 public class Util {
+    static IDiscordClient client = MovieBot.getClient();
+    static ConfigManager cm = MovieBot.getConfigManager();
+    static Color BOT_COLOR = Color.decode("#" + cm.getConfigValue("bot_color"));
 
-    public static File botPath;
+    /**
+     * Returns the bot's color as a Color object
+     */
+    public static Color getBotColor() {
+        return BOT_COLOR;
+    }
 
-    private static final Pattern USER_MENTION_PATTERN = Pattern.compile("^<@!?(\\d+)>$");
+    /**
+     * Send report
+     */
+    public static void reportHome(IMessage message, Exception e) {
+        e.printStackTrace();
 
-    static {
+        IChannel errorChannel = client.getChannelByID(MovieBot.ERRORLOG_CH_ID);
+
+        EmbedBuilder bld = new EmbedBuilder()
+                .withColor(BOT_COLOR)
+                .withTimestamp(System.currentTimeMillis())
+                .withAuthorName(message.getAuthor().getName() + '#' + message.getAuthor().getDiscriminator())
+                .withAuthorIcon(getAvatar(message.getAuthor()))
+                .withDesc(message.getContent())
+                .appendField("\u200B", "\u200B", false)
+
+                .appendField("Exeption:", e.toString(), false);
+
+        StringBuilder stack = new StringBuilder();
+        for (StackTraceElement s : e.getStackTrace()) {
+            stack.append(s.toString());
+            stack.append("\n");
+        }
+
+        String stackString = stack.toString();
+        if (stackString.length() > 1024) {
+            stackString = stackString.substring(0, 1800);
+        }
+
+        bld
+                .appendField("Stack:", stackString, false);
+
+        sendEmbed(errorChannel, bld.build());
+    }
+
+    public static void reportHome(Exception e) {
+        e.printStackTrace();
+
+        IChannel errorChannel = client.getChannelByID(MovieBot.ERRORLOG_CH_ID);
+
+        EmbedBuilder bld = new EmbedBuilder()
+                .withColor(BOT_COLOR)
+                .withTimestamp(System.currentTimeMillis())
+                .appendField("Exeption:", e.toString(), false);
+
+        StringBuilder stack = new StringBuilder();
+        for (StackTraceElement s : e.getStackTrace()) {
+            stack.append(s.toString());
+            stack.append("\n");
+        }
+
+        String stackString = stack.toString();
+        if (stackString.length() > 1024) {
+            stackString = stackString.substring(0, 1800);
+        }
+
+        bld
+                .appendField("Stack:", stackString, false);
+
+        sendEmbed(errorChannel, bld.build());
+    }
+
+    /**
+     * Send botLog
+     */
+    public static void botLog(IMessage message) {
         try {
-            botPath = new File(MovieBot.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParentFile();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
+            IChannel botLogChannel = client.getChannelByID(MovieBot.BOTLOG_CH_ID);
+
+            EmbedBuilder bld = new EmbedBuilder()
+                    .withColor(BOT_COLOR)
+                    .withAuthorName(message.getAuthor().getName() + '#' + message.getAuthor().getDiscriminator())
+                    .withAuthorIcon(getAvatar(message.getAuthor()))
+                    .withDesc(message.getFormattedContent())
+                    .withFooterText(message.getGuild().getName() + "/#" + message.getChannel().getName())
+                    .withTimestamp(System.currentTimeMillis());
+
+            sendEmbed(botLogChannel, bld.build());
+        } catch (Exception e) {
+            reportHome(message, e);
         }
     }
 
-    public static void sendMessage(IChannel channel, String message) {
+    /**
+     * Command syntax error
+     */
+    public static void syntaxError(Command command, IMessage message) {
         try {
-            channel.sendMessage(message);
+            EmbedBuilder bld = new EmbedBuilder()
+                    .withColor(BOT_COLOR)
+                    .withAuthorName(command.getName())
+                    .withAuthorIcon(MovieBot.getClient().getApplicationIconURL())
+                    .withDesc(command.getDescription())
+                    .appendField("Syntax:", MovieBot.getPrefix() + command.getSyntax(), false);
+
+            sendEmbed(message.getChannel(), bld.build());
         } catch (Exception e) {
-            e.printStackTrace();
+            reportHome(message, e);
         }
+    }
+
+    /**
+     * Delete a message
+     */
+    public static void deleteMessage(IMessage message) {
+        try {
+            message.delete();
+        } catch (Exception e) {
+            reportHome(message, e);
+        }
+    }
+
+    /**
+     * Add a server log
+     */
+    public static IMessage sendLog(IMessage message, String text) {
+        RequestBuffer.RequestFuture<IMessage> future = RequestBuffer.request(() -> {
+            try {
+                IUser user = message.getAuthor();
+
+                new EmbedBuilder();
+                EmbedBuilder embed = new EmbedBuilder();
+
+                embed.withFooterIcon(getAvatar(user));
+                embed.withFooterText("Action by @" + getTag(user));
+
+                embed.withDescription(text);
+
+                embed.withTimestamp(System.currentTimeMillis());
+
+                IDiscordClient client = MovieBot.getInstance().getClient();
+                return new MessageBuilder(client).withEmbed(embed.withColor(Color.GRAY).build())
+                        .withChannel(MovieBot.SERVERLOG_CH_ID).send();
+            } catch (Exception e) {
+                reportHome(e);
+            }
+            return null;
+        });
+        return future.get();
+    }
+
+    public static IMessage sendLog(IMessage message, String text, Color color) {
+        RequestBuffer.RequestFuture<IMessage> future = RequestBuffer.request(() -> {
+            try {
+                IUser user = message.getAuthor();
+
+                new EmbedBuilder();
+                EmbedBuilder embed = new EmbedBuilder();
+
+                embed.withFooterIcon(getAvatar(user));
+                embed.withFooterText("Action by @" + getTag(user));
+
+                embed.withDescription(text);
+
+                embed.withTimestamp(System.currentTimeMillis());
+
+                IDiscordClient client = MovieBot.getInstance().getClient();
+                return new MessageBuilder(client).withEmbed(embed.withColor(color).build())
+                        .withChannel(MovieBot.SERVERLOG_CH_ID).send();
+            } catch (Exception e) {
+                reportHome(e);
+            }
+            return null;
+        });
+        return future.get();
+    }
+
+    /**
+     * Send simple fast embeds
+     */
+    public static void simpleEmbed(IChannel channel, String message) {
+        sendEmbed(channel, new EmbedBuilder().withDescription(message).withColor(BOT_COLOR).build());
+    }
+
+    public static void simpleEmbed(IChannel channel, String message, Color color) {
+        sendEmbed(channel, new EmbedBuilder().withDescription(message).withColor(color).build());
     }
 
     public static IMessage sendEmbed(IChannel channel, EmbedObject embedObject) {
@@ -71,14 +226,6 @@ public class Util {
         return sentMessage.get();
     }
 
-    public static void deleteMessage(IMessage message) {
-        try {
-            message.delete();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     public static void deleteBufferedMessage(IMessage message) {
         RequestBuffer.request(() -> {
             try {
@@ -89,6 +236,9 @@ public class Util {
         });
     }
 
+    /**
+     * Bulk deletes a list of messages
+     */
     public static void bulkDelete(IChannel channel, List<IMessage> toDelete) {
         RequestBuffer.request(() -> {
             if (toDelete.size() > 0) {
@@ -96,13 +246,13 @@ public class Util {
                     try {
                         toDelete.get(0).delete();
                     } catch (MissingPermissionsException | DiscordException e) {
-                        e.printStackTrace();
+                        reportHome(e);
                     }
                 } else {
                     try {
-                        channel.getMessages().bulkDelete(toDelete);
+                        channel.bulkDelete(toDelete);
                     } catch (DiscordException | MissingPermissionsException e) {
-                        e.printStackTrace();
+                        reportHome(e);
                     }
 
                 }
@@ -110,42 +260,26 @@ public class Util {
         });
     }
 
-    public static void botLog(IMessage message) {
-        IDiscordClient client = MovieBot.getInstance().getClient();
-        try {
-            String text = "@" + message.getAuthor().getDisplayName(message.getGuild()) + " issued ``" + message.getFormattedContent() + "`` in " + message.getGuild().getName() + "/" + message.getChannel().mention();
-
-            Util.sendWebhook(MovieBot.BOTLOG_WEBHOOK_URL, client.getApplicationIconURL(), client.getApplicationName(), text);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
+    /**
+     * Sends an announcement (message in general and announcements)
+     */
     public static void sendAnnouncement(String message) {
         try {
-            Util.sendMessage(MovieBot.getInstance().getClient().getChannelByID(MovieBot.GENERAL_CHANNEL_ID), message);
-            Util.sendMessage(MovieBot.getInstance().getClient().getChannelByID(MovieBot.ANNOUNCEMENT_CHANNEL_ID), message);
+            Util.sendMessage(MovieBot.getInstance().getClient().getChannelByID(MovieBot.GENERAL_CH_ID), message);
+            Util.sendMessage(MovieBot.getInstance().getClient().getChannelByID(MovieBot.ANNOUNCEMENT_CH_ID), message);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void errorLog(IMessage message, String text) {
+    public static void sendMessage(IChannel channel, String message) {
         try {
-            Util.sendPrivateMessage(MovieBot.getInstance().getClient().getUserByID("73416411443113984"), text + " in  " + message.getChannel().mention());
+            channel.sendMessage(message);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static Boolean permissionCheck(IMessage message, String role) {
-        try {
-            return message.getGuild().getRolesForUser(message.getAuthor()).contains(message.getGuild().getRolesByName(role).get(0));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     public static void sendPrivateMessage(IUser user, String message) {
         try {
@@ -153,69 +287,6 @@ public class Util {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public static void sendWebhook(String URL, String iconURL, String displayName, String message) {
-        try {
-            new Slack(URL)
-                    .icon(iconURL)
-                    .displayName(displayName)
-                    .push(new SlackMessage(message));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static IMessage sendLog(IMessage message, String text) {
-        RequestBuffer.RequestFuture<IMessage> future = RequestBuffer.request(() -> {
-            try {
-                IUser user = message.getAuthor();
-
-                new EmbedBuilder();
-                EmbedBuilder embed = new EmbedBuilder();
-
-                embed.withFooterIcon(getAvatar(user));
-                embed.withFooterText("Action by @" + getTag(user));
-
-                embed.withDescription(text);
-                embed.appendField("\u200B", "\u200B", false);
-
-                embed.withTimestamp(System.currentTimeMillis());
-
-                IDiscordClient client = MovieBot.getInstance().getClient();
-                return new MessageBuilder(client).withEmbed(embed.withColor(023563).build())
-                        .withChannel(client.getChannelByID(MovieBot.LOG_CHANNEL_ID)).send();
-            } catch (Exception e) {
-            }
-            return null;
-        });
-        return future.get();
-    }
-
-    public static IMessage sendLog(IMessage message, String text, Color color) {
-        RequestBuffer.RequestFuture<IMessage> future = RequestBuffer.request(() -> {
-            try {
-                IUser user = message.getAuthor();
-
-                new EmbedBuilder();
-                EmbedBuilder embed = new EmbedBuilder();
-
-                embed.withFooterIcon(getAvatar(user));
-                embed.withFooterText("Action by @" + getTag(user));
-
-                embed.withDescription(text);
-                embed.appendField("\u200B", "\u200B", false);
-
-                embed.withTimestamp(System.currentTimeMillis());
-
-                IDiscordClient client = MovieBot.getInstance().getClient();
-                return new MessageBuilder(client).withEmbed(embed.withColor(color).build())
-                        .withChannel(client.getChannelByID(MovieBot.LOG_CHANNEL_ID)).send();
-            } catch (Exception e) {
-            }
-            return null;
-        });
-        return future.get();
     }
 
     //EMBEDBUILDER STUFF
@@ -253,14 +324,6 @@ public class Util {
         return toInt(System.currentTimeMillis() / 1000);
     }
 
-    public static IUser getUserFromMentionArg(String arg) {
-        Matcher matcher = USER_MENTION_PATTERN.matcher(arg);
-        if (matcher.matches()) {
-            return MovieBot.getInstance().getClient().getUserByID(matcher.group(1));
-        }
-        return null;
-    }
-
     public static String to12Hour(String time) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
@@ -272,74 +335,13 @@ public class Util {
         return time;
     }
 
-    public static String requestUsernameByID(String id) {
-        IDiscordClient client = MovieBot.getInstance().getClient();
-
-        RequestBuffer.RequestFuture<String> userNameResult = RequestBuffer.request(() -> {
-            try {
-                String result = ((DiscordClientImpl) client).REQUESTS.GET.makeRequest(DiscordEndpoints.USERS + id,
-                        new BasicNameValuePair("authorization", MovieBot.getInstance().getClient().getToken()));
-                return DiscordUtils.GSON.fromJson(result, UserObject.class).username;
-            } catch (JsonSyntaxException e) {
-                e.printStackTrace();
-            } catch (DiscordException e) {
-                e.printStackTrace();
-            }
-
-            return "NULL";
-        });
-
-        return userNameResult.get();
-    }
-
-    public static List<IUser> getUsersByRole(String roleID) {
+    public static String getRule(Long ruleID) {
         try {
-            IGuild guild = MovieBot.getInstance().getClient().getGuildByID("192441520178200577");
-            IRole role = guild.getRoleByID(roleID);
-
-            if (role != null) {
-                List<IUser> allUsers = guild.getUsers();
-                List<IUser> ourUsers = new ArrayList<>();
-
-
-                for (IUser u : allUsers) {
-                    List<IRole> userRoles = u.getRolesForGuild(guild);
-
-                    if (userRoles.contains(role)) {
-                        ourUsers.add(u);
-                    }
-                }
-
-                return ourUsers;
-
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public static List<IMessage> getSuggestions() {
-        try {
-            IChannel channel = MovieBot.getInstance().getClient().getGuildByID("256248900124540929").getChannelByID("256491839870337024");
-
-            List<IMessage> messages = channel.getPinnedMessages();
-
-            return messages;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public static String getRule(String ruleID) {
-        try {
-            String rule = MovieBot.getInstance().getClient().getChannelByID("263185370424803328").getMessageByID(ruleID).getContent();
+            String rule = MovieBot.getInstance().getClient().getChannelByID(MovieBot.INFO_CH_ID).getMessageByID(ruleID).getContent();
 
             return rule;
         } catch (Exception e) {
-            e.printStackTrace();
+            reportHome(e);
         }
         return null;
     }

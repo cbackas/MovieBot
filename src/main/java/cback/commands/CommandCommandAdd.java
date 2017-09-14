@@ -6,6 +6,7 @@ import cback.Util;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IUser;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,38 +24,32 @@ public class CommandCommandAdd implements Command {
 
     @Override
     public String getSyntax() {
-        return "!addcommand [commandName] [Response text]";
+        return "addcommand commandname \"custom response\"";
     }
 
     @Override
     public String getDescription() {
-        return "Adds a custom command that returns desired response text when you call it";
+        return "Creates a simple custom command";
     }
 
     @Override
-    public List<String> getPermissions() {
-        return Arrays.asList(MovieRoles.ADMIN.id);
+    public List<Long> getPermissions() {
+        return Arrays.asList(MovieRoles.ADMIN.id, MovieRoles.NETWORKMOD.id);
     }
 
     @Override
-    public void execute(MovieBot bot, IDiscordClient client, String[] args, IGuild guild, IMessage message, boolean isPrivate) {
-        if (message.getAuthor().getRolesForGuild(guild).contains(guild.getRoleByID(MovieRoles.ADMIN.id))) {
+    public void execute(IMessage message, String content, String[] args, IUser author, IGuild guild, List<Long> roleIDs, boolean isPrivate, IDiscordClient client, MovieBot bot) {
+        String commandName = args[0];
+        String commandResponse = content.split(" ", 3)[2];
 
-            String text = message.getContent();
+        if (commandName != null && commandResponse != null && bot.getCommandManager().getCommandValue(commandName) == null && !MovieBot.getInstance().registeredCommands.contains(commandName)) {
+            bot.getCommandManager().setConfigValue(commandName, commandResponse);
 
-            String commandName = args[0];
-            String commandResponse = text.split(" ", 3)[2];
-
-            if (commandName != null && commandResponse != null && bot.getCommandManager().getCommandValue(commandName) == null && !MovieBot.getInstance().registeredCommands.contains(commandName)) {
-                bot.getCommandManager().setConfigValue(commandName, commandResponse);
-
-                Util.sendMessage(message.getChannel(), "Custom command added: ``" + commandName + "``");
-            } else {
-                Util.sendMessage(message.getChannel(), "**Usage**: ``!addcommand commandname \"custom response\"``");
-            }
-
-            Util.botLog(message);
-            Util.deleteMessage(message);
+            Util.simpleEmbed(message.getChannel(), "Custom command added: ``" + commandName + "``");
+        } else {
+            Util.syntaxError(this, message);
         }
+
+        Util.deleteMessage(message);
     }
 }

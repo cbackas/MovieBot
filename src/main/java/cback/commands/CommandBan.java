@@ -1,11 +1,15 @@
 package cback.commands;
 
 import cback.MovieBot;
+import cback.MovieBot;
 import cback.MovieRoles;
 import cback.Util;
 import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.api.internal.DiscordUtils;
-import sx.blah.discord.handle.obj.*;
+import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.Permissions;
+import sx.blah.discord.util.PermissionUtils;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -27,58 +31,50 @@ public class CommandBan implements Command {
 
     @Override
     public String getSyntax() {
-        return "!ban @user [reason]";
+        return "ban @user [reason]";
     }
 
     @Override
     public String getDescription() {
-        return "Bans a user from the server";
+        return "Bans a user from the server and logs the reason";
     }
 
     @Override
-    public List<String> getPermissions() {
-        return Arrays.asList(MovieRoles.MOD.id, MovieRoles.ADMIN.id);
+    public List<Long> getPermissions() {
+        return Arrays.asList(MovieRoles.STAFF.id);
     }
 
     @Override
-    public void execute(MovieBot bot, IDiscordClient client, String[] args, IGuild guild, IMessage message, boolean isPrivate) {
-        if (message.getAuthor().getRolesForGuild(guild).contains(guild.getRoleByID(MovieRoles.STAFF.id))) {
-            String text = message.getContent();
-            IUser mod = message.getAuthor();
-            try {
-               DiscordUtils.checkPermissions(message.getChannel().getModifiedPermissions(mod), EnumSet.of(Permissions.BAN));
-                Pattern pattern = Pattern.compile("^!ban <@!?(\\d+)> ?(.+)?");
-                Matcher matcher = pattern.matcher(text);
-                if (matcher.find()) {
-                    String userInput = matcher.group(1);
-                    String reason = matcher.group(2);
-                    if (reason != null) {
-                        IUser user = guild.getUserByID(userInput);
-                        if (user.getID().equals(mod.getID())) {
+    public void execute(IMessage message, String content, String[] args, IUser author, IGuild guild, List<Long> roleIDs, boolean isPrivate, IDiscordClient client, MovieBot bot) {
+        try {
+            PermissionUtils.hasPermissions(message.getChannel(), message.getAuthor(), EnumSet.of(Permissions.BAN));
+            Pattern pattern = Pattern.compile("^\\!ban <@!?(\\d+)> ?(.+)?");
+            Matcher matcher = pattern.matcher(content);
+            if (matcher.find()) {
+                String userInput = matcher.group(1);
+                String reason = matcher.group(2);
+                IUser user = guild.getUserByID(Long.parseLong(userInput));
+                if (reason != null && user != null) {
+                        if (user.getStringID().equals(author.getStringID())) {
                             Util.sendMessage(message.getChannel(), "You're gonna have to try harder than that.");
                         } else {
                             try {
-                                guild.banUser(user, 1);
+                                guild.banUser(user, reason + " Appeal at https://www.reddit.com/r/LoungeBan/", 1);
                                 Util.sendLog(message, "Banned " + user.getDisplayName(guild) + "\n**Reason:** " + reason, Color.red);
-                                Util.sendMessage(message.getChannel(), user.getDisplayName(guild) + " has been banned. Check " + guild.getChannelByID(MovieBot.LOG_CHANNEL_ID).mention() + " for more info.");
+                                Util.simpleEmbed(message.getChannel(), user.getDisplayName(guild) + " has been banned. Check " + guild.getChannelByID(MovieBot.SERVERLOG_CH_ID).mention() + " for more info.");
                             } catch (Exception e) {
-                                e.printStackTrace();
-                                Util.sendMessage(message.getChannel(), "Internal error - cback has been notified");
-                                Util.errorLog(message, "Error running CommandBan - check stacktrace");
+                                Util.simpleEmbed(message.getChannel(), "Error running " + this.getName() + " - error recorded");
+                                Util.reportHome(message, e);
                             }
                         }
                     } else {
-                        Util.sendPrivateMessage(mod, "**Error Banning**: Reason required");
+                        Util.sendPrivateMessage(author, "**Error Banning**: Reason required");
                     }
-                } else {
-                    Util.sendMessage(message.getChannel(), "Invalid arguments. Usage: ``!ban @user reason``");
-                }
-            } catch (Exception e) {
+            } else {
+                Util.syntaxError(this, message);
             }
-
-            Util.botLog(message);
-            Util.deleteMessage(message);
+        } catch (Exception e) {
         }
+        Util.deleteMessage(message);
     }
-
 }

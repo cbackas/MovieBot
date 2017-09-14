@@ -6,6 +6,7 @@ import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.member.UserBanEvent;
 import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
 import sx.blah.discord.handle.impl.events.guild.member.UserLeaveEvent;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 
 import java.util.List;
@@ -19,76 +20,70 @@ public class MemberChange {
 
     @EventSubscriber
     public void memberJoin(UserJoinEvent event) {
-        IUser user = event.getUser();
+        if (event.getGuild().getStringID().equals(MovieBot.getHomeGuild().getStringID())) {
+            IUser user = event.getUser();
+            IGuild guild = MovieBot.getHomeGuild();
 
-        //Mute Check
-        if (bot.getConfigManager().getConfigArray("muted").contains(event.getUser().getID())) {
-            try {
-                event.getUser().addRole(event.getGuild().getRoleByID("261746338075639810"));
-            } catch (Exception e) {
-                e.printStackTrace();
+            /**
+             * Mute check
+             */
+            if (bot.getConfigManager().getConfigArray("muted").contains(user.getStringID())) {
+                try {
+                    user.addRole(guild.getRoleByID(MovieBot.MUTED_ROLE_ID));
+                } catch (Exception e) {
+                    Util.reportHome(e);
+                }
             }
-        }
 
-        //Join Counter
-        int joined = Integer.parseInt(bot.getConfigManager().getConfigValue("joined"));
-        bot.getConfigManager().setConfigValue("joined", String.valueOf(joined + 1));
-
-
-        String welcomeMessage = "Welcome to " + event.getGuild().getName() + "! We primarily discuss movies but we also discuss other things on occasion. We are an English server.\n" +
-                "\n" +
-                "**Rule 1:** Stay Civil\n" +
-                "\n" +
-                "**Rule 2:** No Spam\n" +
-                "\n" +
-                "**Rule 3:** No Self-Promotion\n" +
-                "\n" +
-                "**Rule 4:** Keep spoilers in their respective channels.\n" +
-                "\n" +
-                "**Rule 5:** No NSFW of any kind.\n" +
-                "\n" +
-                "**Rule 6:** Do not abuse or add bots.\n" +
-                "\n" +
-                "**Other:** Our rules are subject to change, more in depth rules are on the server, #announcements.\n" +
-                "\n" +
-                "``Important info``\n" +
-                "We are constantly adding new channels and deleting inactive ones, If you don't see your favorite show head over to #suggestions and simply do !suggest 'your show'. It will probably be added soon!";
-        try {
-            Util.sendPrivateMessage(user, welcomeMessage);
-        } catch (Exception e) {
-            e.printStackTrace();
+            /**
+             * Member counter
+             */
+            int joinedUsers = Integer.parseInt(bot.getConfigManager().getConfigValue("joined"));
+            bot.getConfigManager().setConfigValue("joined", String.valueOf(joinedUsers + 1));
         }
     }
 
     @EventSubscriber
     public void memberLeave(UserLeaveEvent event) {
-        IUser user = event.getUser();
+        if (event.getGuild().getStringID().equals(MovieBot.getHomeGuild().getStringID())) {
+            IUser user = event.getUser();
+            IGuild guild = MovieBot.getHomeGuild();
 
-        //Mute Check
-        if (bot.getConfigManager().getConfigArray("muted").contains(event.getUser().getID())) {
-            Util.sendMessage(event.getGuild().getChannelByID("261746338075639810"), user + " is muted and left the server. Their mute will be applied again when/if they return.");
+            /**
+             * Mute check
+             */
+            if (bot.getConfigManager().getConfigArray("muted").contains(event.getUser().getStringID())) {
+                Util.sendMessage(guild.getChannelByID(MovieBot.STAFF_CH_ID), user + " is muted and left the server. Their mute will be applied again when/if they return.");
+            }
+
+            /**
+             * Member counter
+             */
+            int left = Integer.parseInt(bot.getConfigManager().getConfigValue("left"));
+            bot.getConfigManager().setConfigValue("left", String.valueOf(left + 1));
         }
-
-        //Leave Counter
-        int left = Integer.parseInt(bot.getConfigManager().getConfigValue("left"));
-        bot.getConfigManager().setConfigValue("left", String.valueOf(left + 1));
-
-
     }
 
     @EventSubscriber
     public void memberBanned(UserBanEvent event) {
-        IUser user = event.getUser();
+        if (event.getGuild().getStringID().equals(MovieBot.getHomeGuild().getStringID())) {
+            IUser user = event.getUser();
+            IGuild guild = MovieBot.getHomeGuild();
 
-        //Mute Check
-        if (bot.getConfigManager().getConfigArray("muted").contains(event.getUser().getID())) {
-            List<String> mutedUsers = bot.getConfigManager().getConfigArray("muted");
-            mutedUsers.remove(user.getID());
-            bot.getConfigManager().setConfigValue("muted", mutedUsers);
+            /**
+             * Mute check
+             */
+            if (bot.getConfigManager().getConfigArray("muted").contains(user.getStringID())) {
+                List<String> mutedUsers = bot.getConfigManager().getConfigArray("muted");
+                mutedUsers.remove(user.getStringID());
+                bot.getConfigManager().setConfigValue("muted", mutedUsers);
+            }
+
+            /**
+             * Member counter
+             */
+            int left = Integer.parseInt(bot.getConfigManager().getConfigValue("left"));
+            bot.getConfigManager().setConfigValue("left", String.valueOf(left + 1));
         }
-
-        //Leave Counter
-        int left = Integer.parseInt(bot.getConfigManager().getConfigValue("left"));
-        bot.getConfigManager().setConfigValue("left", String.valueOf(left + 1));
     }
 }

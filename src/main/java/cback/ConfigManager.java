@@ -7,6 +7,7 @@ import org.json.simple.parser.JSONParser;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.net.URISyntaxException;
 import java.util.*;
 
 public class ConfigManager {
@@ -27,7 +28,9 @@ public class ConfigManager {
         defaultConfig.put("joined", "0");
         defaultConfig.put("left", "0");
         defaultConfig.put("muted", new ArrayList<String>());
-        defaultConfig.put("cantsummon", new ArrayList<String>());
+        defaultConfig.put("HOMESERVER_ID", "256248900124540929");
+        defaultConfig.put("bannedWords", new ArrayList<String>());
+        defaultConfig.put("bot_color", "5532b0");
     }
 
     public ConfigManager(MovieBot bot) {
@@ -37,7 +40,7 @@ public class ConfigManager {
 
     private void initConfig() {
         try {
-            configFile = new File(Util.botPath, "movieconfig.json");
+            configFile = new File(botPath, "movieconfig.json");
             if (configFile.exists()) {
                 JSONParser parser = new JSONParser();
                 FileReader reader = new FileReader(configFile);
@@ -119,4 +122,18 @@ public class ConfigManager {
             return Optional.empty();
         }
     }
+
+    /**
+     * Botpath stuff
+     */
+    public static File botPath;
+
+    static {
+        try {
+            botPath = new File(MovieBot.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParentFile();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

@@ -1,44 +1,58 @@
 package cback;
 
-import cback.commands.*;
 import cback.eventFunctions.*;
+import cback.commands.*;
 import org.reflections.Reflections;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.impl.events.shard.DisconnectedEvent;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.modules.Configuration;
 import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.EmbedBuilder;
 
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-@SuppressWarnings("FieldCanBeLocal")
 public class MovieBot {
 
     private static MovieBot instance;
-    private IDiscordClient client;
+    private static IDiscordClient client;
 
     private TraktManager traktManager;
-    private ConfigManager configManager;
-    private CommandManager commandManager;
+    private static ConfigManager configManager;
+    private static CommandManager commandManager;
     private Scheduler scheduler;
 
-    private List<String> botAdmins = new ArrayList<>();
-    public  static List<Command> registeredCommands = new ArrayList<>();
+    public static ArrayList<Long> messageCache = new ArrayList<>();
 
+    public  static List<Command> registeredCommands = new ArrayList<>();
+    static private String prefix = "!";
+    public List<String> prefixes = new ArrayList<>();
     private static final Pattern COMMAND_PATTERN = Pattern.compile("^!([^\\s]+) ?(.*)", Pattern.CASE_INSENSITIVE);
-    public static final String ANNOUNCEMENT_CHANNEL_ID = "263185392818323466";
-    public static final String GENERAL_CHANNEL_ID = "256248900124540929";
-    public static final String LOG_CHANNEL_ID = "261737182543216640";
-    public static final String BOTLOG_WEBHOOK_URL = "https://ptb.discordapp.com/api/webhooks/263740625755701259/4md6yxY7cUxq5mS5LcfMtU1azF0RYurFdo-sl-YBbnkp-rhHTQais6xjE_ABXAsGdQG-/slack";
+
+    public static final long INFO_CH_ID = 263185370424803328l;
+    public static final long ANNOUNCEMENT_CH_ID = 263185392818323466l;
+    public static final long GENERAL_CH_ID = 256248900124540929l;
+    public static final long MESSAGELOG_CH_ID = 337666816383909889l;
+    public static final long SERVERLOG_CH_ID = 261737182543216640l;
+    public static final long STAFF_CH_ID = 226433456060497920l;
+    public static final long DEV_CH_ID = 268510274858778624l;
+    public static final long MUTED_ROLE_ID = 266655441449254914l;
+
+    public static final long ERRORLOG_CH_ID = 346104666796589056l;
+    public static final long BOTLOG_CH_ID = 346483682376286208l;
+    public static final long BOTPM_CH_ID = 346104720903110656l;
 
     private long startTime;
 
@@ -54,21 +68,23 @@ public class MovieBot {
         configManager = new ConfigManager(this);
         commandManager = new CommandManager(this);
 
+        prefixes.add(getPrefix());
+        prefixes.add("t!");
+        prefixes.add("!g");
+        prefixes.add("--");
+        prefixes.add(".");
+        prefixes.add("?");
+
         connect();
         client.getDispatcher().registerListener(this);
         client.getDispatcher().registerListener(new ChannelChange(this));
         client.getDispatcher().registerListener(new MemberChange(this));
+        client.getDispatcher().registerListener(new MessageChange(this));
 
         traktManager = new TraktManager(this);
         scheduler = new Scheduler(this);
 
         registerAllCommands();
-
-        botAdmins.add("109109946565537792");
-        botAdmins.add("148279556619370496");
-        botAdmins.add("73416411443113984");
-        botAdmins.add("144412318447435776");
-
     }
 
     private void connect() {
@@ -95,6 +111,9 @@ public class MovieBot {
         }
     }
 
+    /*
+     * Message Central Choo Choo
+     */
     @EventSubscriber
     public void onMessageEvent(MessageReceivedEvent event) {
         if (event.getMessage().getAuthor().isBot()) return; //ignore bot messages
@@ -115,7 +134,26 @@ public class MovieBot {
 
                 String args = matcher.group(2);
                 String[] argsArr = args.isEmpty() ? new String[0] : args.split(" ");
-                command.get().execute(this, client, argsArr, guild, message, isPrivate);
+
+                List<Long> roleIDs = message.getAuthor().getRolesForGuild(guild).stream().map(role -> role.getLongID()).collect(Collectors.toList());
+
+                IUser author = message.getAuthor();
+                String content = message.getContent();
+
+                Command cCommand = command.get();
+
+                /**
+                 * If user has permission to run the command: Command executes and botlogs
+                 */
+                //message.getChannel().setTypingStatus(true);
+                if (cCommand.getPermissions() == null || !Collections.disjoint(roleIDs, cCommand.getPermissions())) {
+                    Util.botLog(message);
+                    cCommand.execute(message, content, argsArr, author, guild, roleIDs, isPrivate, client, this);
+                    //message.getChannel().setTypingStatus(false);
+                } else {
+                    Util.simpleEmbed(message.getChannel(), "You don't have permission to perform this command.");
+                    //message.getChannel().setTypingStatus(false);
+                }
             } else if (commandManager.getCommandValue(baseCommand) != null) {
 
                 String response = commandManager.getCommandValue(baseCommand);
@@ -127,17 +165,33 @@ public class MovieBot {
 
                 Util.deleteMessage(message);
             }
-        } else {
-            String lowerCase = message.getContent().toLowerCase();
+            /**
+             * Forwards the random stuff people PM to the bot - to me
+             */
+        } else if (message.getChannel().isPrivate()) {
+            EmbedBuilder bld = new EmbedBuilder()
+                    .withColor(Util.getBotColor())
+                    .withTimestamp(System.currentTimeMillis())
+                    .withAuthorName(message.getAuthor().getName() + '#' + message.getAuthor().getDiscriminator())
+                    .withAuthorIcon(message.getAuthor().getAvatarURL())
+                    .withDesc(message.getContent());
 
-            //Check for discord invite link
-            if (lowerCase.contains("discord.gg") || lowerCase.contains("discordapp.com/invite/")) {
-                IGuild loungeGuild = client.getGuildByID("256248900124540929");
-                if (Util.permissionCheck(message, "Admins") || lowerCase.contains("discord.gg/lounge") || lowerCase.contains("QeuTNRb") || lowerCase.contains("Empn64q")) {
-                } else {
-                    Util.sendPrivateMessage(message.getAuthor(), "Rule 3, Advertising your server is not allowed!");
-                    Util.sendMessage(client.getChannelByID("256249393622024202"), message.getAuthor().mention() + " __might__ have advertised their server in " + message.getChannel().mention() + ". Could a human please investigate?");
+            Util.sendEmbed(client.getChannelByID(BOTPM_CH_ID), bld.build());
+        } else {
+            censorMessages(message);
+
+            /**
+             * Deletes messages/bans users for using too many @ mentions
+             */
+            if (message.getMentions().size() > 10) {
+                try {
+                    guild.banUser(message.getAuthor(), "Mentioned more than 10 users in a message. Appeal at https://www.reddit.com/r/LoungeBan/", 1);
+                    Util.sendLog(message, "Banned " + message.getAuthor().getName() + "\n**Reason:** Doing too many @ mentions", Color.red);
+                } catch (Exception e) {
+                    Util.reportHome(e);
                 }
+            } else if (message.getMentions().size() > 5) {
+                Util.deleteMessage(message);
             }
         }
     }
@@ -145,25 +199,16 @@ public class MovieBot {
     @EventSubscriber
     public void onReadyEvent(ReadyEvent event) {
         System.out.println("Logged in.");
+        client = event.getClient();
 
         startTime = System.currentTimeMillis();
-    }
-
-    @EventSubscriber
-    public void onDisconnectEvent(DisconnectedEvent event) {
-        Util.sendWebhook(
-                "https://ptb.discordapp.com/api/webhooks/276878075944370177/lyhmQffmqwILMc7vawjk3g2tG-1XCV_oqSShvWq4ugjIQQ0X69ffp_cGaruoZ265w72S/slack",
-                client.getApplicationIconURL(),
-                client.getApplicationName(),
-                client.getUserByID("73416411443113984").mention() + " MovieBot has gone offline."
-        );
     }
 
     public TraktManager getTraktManager() {
         return traktManager;
     }
 
-    public ConfigManager getConfigManager() {
+    public static ConfigManager getConfigManager() {
         return configManager;
     }
 
@@ -171,13 +216,19 @@ public class MovieBot {
         return commandManager;
     }
 
-    public IDiscordClient getClient() {
+    public static IDiscordClient getClient() {
         return client;
     }
 
-    public List<String> getBotAdmins() {
-        return botAdmins;
+    public static MovieBot getInstance() {
+        return instance;
     }
+
+    public static String getPrefix() {
+        return prefix;
+    }
+
+    public static IGuild getHomeGuild() { return client.getGuildByID(Long.parseLong(configManager.getConfigValue("HOMESERVER_ID")));}
 
     private void registerAllCommands() {
         new Reflections("cback.commands").getSubTypesOf(Command.class).forEach(commandImpl -> {
@@ -208,8 +259,38 @@ public class MovieBot {
         return (hours < 10 ? "0" + hours : hours) + "h " + (minutes < 10 ? "0" + minutes : minutes) + "m " + (seconds < 10 ? "0" + seconds : seconds) + "s";
     }
 
-    public static MovieBot getInstance() {
-        return instance;
+    /**
+     * Checks for dirty words :o
+     */
+    public void censorMessages(IMessage message) {
+        List<String> bannedWords = MovieBot.getInstance().getConfigManager().getConfigArray("bannedWords");
+        String content = message.getFormattedContent().toLowerCase();
+        Boolean tripped = false;
+        for (String word : bannedWords) {
+            if (content.matches(".*\\b" + word + "\\b.*") || content.matches(".*\\b" + word + "s\\b.*")) {
+                tripped = true;
+                break;
+            }
+        }
+        if (tripped) {
+            message.getChannel().setTypingStatus(true);
+            IUser author = message.getAuthor();
+
+            EmbedBuilder bld = new EmbedBuilder();
+            bld
+                    .withAuthorIcon(author.getAvatarURL())
+                    .withAuthorName(Util.getTag(author))
+                    .withDesc(message.getFormattedContent())
+                    .withTimestamp(System.currentTimeMillis())
+                    .withFooterText("Auto-deleted from #" + message.getChannel().getName());
+
+            Util.sendEmbed(message.getGuild().getChannelByID(MESSAGELOG_CH_ID), bld.withColor(Util.getBotColor()).build());
+            Util.sendPrivateMessage(author, "Your message has been automatically removed for a banned word or something");
+
+            messageCache.add(message.getLongID());
+            message.delete();
+            message.getChannel().setTypingStatus(false);
+        }
     }
 
 }

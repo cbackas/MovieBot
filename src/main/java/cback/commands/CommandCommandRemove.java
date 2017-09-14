@@ -6,6 +6,7 @@ import cback.Util;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IUser;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,40 +24,33 @@ public class CommandCommandRemove implements Command {
 
     @Override
     public String getSyntax() {
-        return "!removecommand [commandName]";
+        return "removecommand [commandname]";
     }
 
     @Override
     public String getDescription() {
-        return "Deletes the specified custom commands";
+        return null;
     }
 
     @Override
-    public List<String> getPermissions() {
+    public List<Long> getPermissions() {
         return Arrays.asList(MovieRoles.ADMIN.id);
     }
 
     @Override
-    public void execute(MovieBot bot, IDiscordClient client, String[] args, IGuild guild, IMessage message, boolean isPrivate) {
-        if (message.getAuthor().getRolesForGuild(guild).contains(guild.getRoleByID(MovieRoles.ADMIN.id))) {
+    public void execute(IMessage message, String content, String[] args, IUser author, IGuild guild, List<Long> roleIDs, boolean isPrivate, IDiscordClient client, MovieBot bot) {
+        if (args.length == 1) {
+            String command = args[0];
 
-            if (args.length == 1) {
+            if (bot.getCommandManager().getCommandValue(command) != null) {
+                bot.getCommandManager().removeConfigValue(command);
 
-                String command = args[0];
-
-                if (bot.getCommandManager().getCommandValue(command) != null) {
-                    bot.getCommandManager().removeConfigValue(command);
-
-                    Util.sendMessage(message.getChannel(), "Custom command removed: ``" + command + "``");
-                }
-
-
-            } else {
-                Util.sendMessage(message.getChannel(), "**Usage**: ``!removecommand commandname``");
+                Util.simpleEmbed(message.getChannel(), "Custom command removed: ``" + command + "``");
             }
-
-            Util.botLog(message);
-            Util.deleteMessage(message);
+        } else {
+            Util.syntaxError(this, message);
         }
+
+        Util.deleteMessage(message);
     }
 }

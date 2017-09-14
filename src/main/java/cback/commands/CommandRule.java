@@ -1,12 +1,14 @@
 package cback.commands;
 
-import cback.MovieRoles;
 import cback.Rules;
 import cback.MovieBot;
+import cback.MovieRoles;
 import cback.Util;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.util.EmbedBuilder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,39 +27,38 @@ public class CommandRule implements Command {
 
     @Override
     public String getSyntax() {
-        return "!rule [number]";
+        return "rule #";
     }
 
     @Override
     public String getDescription() {
-        return "Returns the requested rule";
+        return "Returns the rule requested";
     }
 
     @Override
-    public List<String> getPermissions() {
+    public List<Long> getPermissions() {
         return Arrays.asList(MovieRoles.STAFF.id);
     }
 
     @Override
-    public void execute(MovieBot bot, IDiscordClient client, String[] args, IGuild guild, IMessage message, boolean isPrivate) {
-        if (Util.permissionCheck(message, "Staff")) {
-            Util.botLog(message);
+    public void execute(IMessage message, String content, String[] args, IUser author, IGuild guild, List<Long> roleIDs, boolean isPrivate, IDiscordClient client, MovieBot bot) {
+        if (args.length == 1) {
+            String ruleNumber = args[0];
+            Rules rule = Rules.getRule(ruleNumber);
 
-            if (args.length == 1) {
+            if (rule != null) {
+                EmbedBuilder ruleEmbed = new EmbedBuilder();
 
-                String ruleNumber = args[0];
-                Rules rule = Rules.getRule(ruleNumber);
+                ruleEmbed
+                        .withAuthorName(rule.title)
+                        .withDescription(rule.fullRule);
 
-                if (rule != null) {
-                    Util.sendMessage(message.getChannel(), rule.fullRule);
-                } else {
-                    Util.sendMessage(message.getChannel(), "Rule not found");
-                }
-
+                Util.sendEmbed(message.getChannel(), ruleEmbed.withColor(Util.getBotColor()).build());
             } else {
-                Util.sendMessage(message.getChannel(), "Too many arguments");
+                Util.simpleEmbed(message.getChannel(), "Rule not found");
             }
-
+        } else {
+            Util.syntaxError(this, message);
         }
     }
 

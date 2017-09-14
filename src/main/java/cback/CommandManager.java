@@ -7,6 +7,7 @@ import org.json.simple.parser.JSONParser;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,7 +32,7 @@ public class CommandManager {
 
     private void initConfig() {
         try {
-            commandFile = new File(Util.botPath, "commands.json");
+            commandFile = new File(botPath, "commands.json");
             if (commandFile.exists()) {
                 JSONParser parser = new JSONParser();
                 FileReader reader = new FileReader(commandFile);
@@ -113,5 +114,18 @@ public class CommandManager {
             stringBuilder.append("\n").append(((String) key));
         }
         return stringBuilder.toString();
+    }
+
+    /**
+     * Botpath stuff
+     */
+    public static File botPath;
+
+    static {
+        try {
+            botPath = new File(MovieBot.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParentFile();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 }

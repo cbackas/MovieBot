@@ -6,6 +6,7 @@ import cback.Util;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IUser;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,29 +24,28 @@ public class CommandAnnounce implements Command {
 
     @Override
     public String getSyntax() {
-        return "!announce [announcement text]";
+        return "announce [message]";
     }
 
     @Override
     public String getDescription() {
-        return "Sends a public announcement in both #announcements and #general";
+        return "Sends a message in the announcement channel and the general channel";
     }
 
     @Override
-    public List<String> getPermissions() {
+    public List<Long> getPermissions() {
         return Arrays.asList(MovieRoles.ADMIN.id);
     }
 
     @Override
-    public void execute(MovieBot bot, IDiscordClient client, String[] args, IGuild guild, IMessage message, boolean isPrivate) {
-        if (Util.permissionCheck(message, "Admins")) {
-
-            String announcement = message.getContent().split(" ", 2)[1];
+    public void execute(IMessage message, String content, String[] args, IUser author, IGuild guild, List<Long> roleIDs, boolean isPrivate, IDiscordClient client, MovieBot bot) {
+        if (args.length >= 1) {
+            String announcement = content.split(" ", 2)[1];
             Util.sendAnnouncement(announcement);
-
-            Util.botLog(message);
-            Util.deleteMessage(message);
+        } else {
+            Util.syntaxError(this, message);
         }
+        Util.deleteMessage(message);
     }
 
 }

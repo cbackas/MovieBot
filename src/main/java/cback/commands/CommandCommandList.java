@@ -5,6 +5,7 @@ import cback.Util;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IUser;
 
 import java.util.List;
 
@@ -21,24 +22,23 @@ public class CommandCommandList implements Command {
 
     @Override
     public String getSyntax() {
-        return "!listcommands";
-    }
-
-    @Override
-    public String getDescription() {
-        return "Returns a list of custom commands on the server";
-    }
-
-    @Override
-    public List<String> getPermissions() {
         return null;
     }
 
     @Override
-    public void execute(MovieBot bot, IDiscordClient client, String[] args, IGuild guild, IMessage message, boolean isPrivate) {
-        Util.sendMessage(message.getChannel(), "**Custom Commands**: \n" + bot.getCommandManager().getCommandList());
+    public String getDescription() {
+        return null;
+    }
 
-        Util.botLog(message);
+    @Override
+    public List<Long> getPermissions() {
+        return null;
+    }
+
+    @Override
+    public void execute(IMessage message, String content, String[] args, IUser author, IGuild guild, List<Long> roleIDs, boolean isPrivate, IDiscordClient client, MovieBot bot) {
+        Util.simpleEmbed(message.getChannel(), "**Custom Commands**: \n" + bot.getCommandManager().getCommandList());
+
         Util.deleteMessage(message);
     }
 }

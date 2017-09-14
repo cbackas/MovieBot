@@ -1,16 +1,12 @@
 package cback.commands;
 
 import cback.MovieBot;
-import cback.MovieRoles;
 import cback.Util;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IRole;
-import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.EmbedBuilder;
-import sx.blah.discord.util.MessageBuilder;
-import sx.blah.discord.util.RequestBuffer;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,7 +26,7 @@ public class CommandHelp implements Command {
 
     @Override
     public String getSyntax() {
-        return "!help";
+        return "help";
     }
 
     @Override
@@ -39,17 +35,16 @@ public class CommandHelp implements Command {
     }
 
     @Override
-    public List<String> getPermissions() {
+    public List<Long> getPermissions() {
         return null;
     }
 
     @Override
-    public void execute(MovieBot bot, IDiscordClient client, String[] args, IGuild guild, IMessage message, boolean isPrivate) {
-
-        EmbedBuilder embed = Util.getEmbed();
+    public void execute(IMessage message, String content, String[] args, IUser author, IGuild guild, List<Long> roleIDs, boolean isPrivate, IDiscordClient client, MovieBot bot) {
+        EmbedBuilder embed = new EmbedBuilder();
         embed.withTitle("Commands:");
 
-        List<String> roles = message.getAuthor().getRolesForGuild(guild).stream().map(role -> role.getID()).collect(Collectors.toList());
+        List<Long> roles = message.getAuthor().getRolesForGuild(guild).stream().map(role -> role.getLongID()).collect(Collectors.toList());
         for (Command c : MovieBot.registeredCommands) {
 
             if (c.getDescription() != null) {
@@ -59,26 +54,19 @@ public class CommandHelp implements Command {
                     aliases = "\n*Aliases:* " + c.getAliases().toString();
                 }
 
-                if (c.getPermissions() == null) {
-                    embed.appendField(c.getSyntax(), c.getDescription() + aliases, false);
-                } else if (!Collections.disjoint(roles, c.getPermissions())) {
-                    embed.appendField(c.getSyntax(), c.getDescription() + aliases, false);
+                if (c.getPermissions() == null || !Collections.disjoint(roles, c.getPermissions())) {
+                    embed.appendField(bot.getPrefix() + c.getSyntax(), c.getDescription() + aliases, false);
                 }
-
             }
-
         }
 
-        embed.withFooterText("Staff commands excluded for regular users");
+        embed.withFooterText("You can only see commands you can use.");
 
         try {
-            Util.sendEmbed(message.getAuthor().getOrCreatePMChannel(), embed.withColor(85, 50, 176).build());
+            Util.sendEmbed(message.getAuthor().getOrCreatePMChannel(), embed.withColor(Util.getBotColor()).build());
         } catch (Exception e) {
-            e.printStackTrace();
+            Util.reportHome(message, e);
         }
-
-        Util.deleteMessage(message);
-
     }
 
 }

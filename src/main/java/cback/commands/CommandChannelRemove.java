@@ -7,6 +7,7 @@ import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IUser;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,51 +25,48 @@ public class CommandChannelRemove implements Command {
 
     @Override
     public String getSyntax() {
-        return "!deletechannel #channel";
+        return "deletechannel #channel";
     }
 
     @Override
     public String getDescription() {
-        return "Deletes a channel and logs it";
+        return "Deletes any and all mentioned channels you provide";
     }
 
     @Override
-    public List<String> getPermissions() {
-        return Arrays.asList(MovieRoles.ADMIN.id);
+    public List<Long> getPermissions() {
+        return Arrays.asList(MovieRoles.ADMIN.id, MovieRoles.NETWORKMOD.id);
     }
 
     @Override
-    public void execute(MovieBot bot, IDiscordClient client, String[] args, IGuild guild, IMessage message, boolean isPrivate) {
-        if (message.getAuthor().getRolesForGuild(guild).contains(guild.getRoleByID(MovieRoles.ADMIN.id))) {
-            List<IChannel> mentionsC = message.getChannelMentions();
-            if (!mentionsC.isEmpty()) {
-                for (IChannel c : mentionsC) {
-                    try {
-
-                        Util.sendLog(message, "Deleted " + c.getName() + " channel.");
-
-                        c.delete();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            } else if (args[0].equalsIgnoreCase("here")) {
+    public void execute(IMessage message, String content, String[] args, IUser author, IGuild guild, List<Long> roleIDs, boolean isPrivate, IDiscordClient client, MovieBot bot) {
+        List<IChannel> mentionsC = message.getChannelMentions();
+        if (!mentionsC.isEmpty()) {
+            for (IChannel c : mentionsC) {
                 try {
 
-                    IChannel here = message.getChannel();
+                    Util.sendLog(message, "Deleted " + c.getName() + " channel.");
 
-                    Util.sendLog(message, "Deleted " + here.getName() + " channel.");
-                    here.delete();
+                    c.delete();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Util.reportHome(message, e);
                 }
-            } else {
-                Util.sendMessage(message.getChannel(), "**ERROR**: Couldn't find channel to delete.");
             }
+        } else if (args[0].equalsIgnoreCase("here")) {
+            try {
 
-            Util.botLog(message);
-            Util.deleteMessage(message);
+                IChannel here = message.getChannel();
+
+                Util.sendLog(message, "Deleted " + here.getName() + " channel.");
+                here.delete();
+            } catch (Exception e) {
+                Util.reportHome(message, e);
+            }
+        } else {
+            Util.simpleEmbed(message.getChannel(), "Error! Couldn't find channel to delete.");
         }
+
+        Util.deleteMessage(message);
     }
 
 }
