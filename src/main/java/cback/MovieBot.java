@@ -201,6 +201,9 @@ public class MovieBot {
         System.out.println("Logged in.");
         client = event.getClient();
 
+        //Set status
+        client.changePlayingText("Type " + prefix + "help");
+
         startTime = System.currentTimeMillis();
     }
 
