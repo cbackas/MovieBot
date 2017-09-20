@@ -157,7 +157,7 @@ public class Util {
                 IDiscordClient client = MovieBot.getInstance().getClient();
                 return new MessageBuilder(client).withEmbed(embed.withColor(Color.GRAY).build())
                         .withChannel(MovieBot.SERVERLOG_CH_ID).send();
-            } catch (Exception e) {
+            } catch (MissingPermissionsException | DiscordException e) {
                 reportHome(e);
             }
             return null;
@@ -183,7 +183,7 @@ public class Util {
                 IDiscordClient client = MovieBot.getInstance().getClient();
                 return new MessageBuilder(client).withEmbed(embed.withColor(color).build())
                         .withChannel(MovieBot.SERVERLOG_CH_ID).send();
-            } catch (Exception e) {
+            } catch (MissingPermissionsException | DiscordException e) {
                 reportHome(e);
             }
             return null;
@@ -207,7 +207,8 @@ public class Util {
             try {
                 return new MessageBuilder(MovieBot.getInstance().getClient()).withEmbed(embedObject)
                         .withChannel(channel).send();
-            } catch (Exception e) {
+            } catch (MissingPermissionsException | DiscordException e) {
+                reportHome(e);
             }
             return null;
         });
@@ -264,19 +265,15 @@ public class Util {
      * Sends an announcement (message in general and announcements)
      */
     public static void sendAnnouncement(String message) {
-        try {
-            Util.sendMessage(MovieBot.getInstance().getClient().getChannelByID(MovieBot.GENERAL_CH_ID), message);
-            Util.sendMessage(MovieBot.getInstance().getClient().getChannelByID(MovieBot.ANNOUNCEMENT_CH_ID), message);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Util.sendMessage(MovieBot.getInstance().getClient().getChannelByID(MovieBot.GENERAL_CH_ID), message);
+        Util.sendMessage(MovieBot.getInstance().getClient().getChannelByID(MovieBot.ANNOUNCEMENT_CH_ID), message);
     }
 
     public static void sendMessage(IChannel channel, String message) {
         try {
             channel.sendMessage(message);
         } catch (Exception e) {
-            e.printStackTrace();
+            reportHome(e);
         }
     }
 
@@ -285,7 +282,7 @@ public class Util {
         try {
             user.getClient().getOrCreatePMChannel(user).sendMessage(message);
         } catch (Exception e) {
-            e.printStackTrace();
+            reportHome(e);
         }
     }
 
