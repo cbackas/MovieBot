@@ -27,11 +27,11 @@ public class TraktManager {
             return;
         }
         trakt = new TraktV2(traktToken.get());
-
     }
 
     public Show showSummaryFromName(String showName) {
         try {
+            //Response<List<SearchResult>> search = trakt.search().textQuery(showName, Type.SHOW, null, 1, 1).execute();
             Response<List<SearchResult>> search = trakt.search().textQuery(Type.SHOW, showName, null, null, null, null, null, null, Extended.FULL, 1, 1).execute();
             if (search.isSuccessful() && !search.body().isEmpty()) {
                 Response<Show> show = trakt.shows().summary(search.body().get(0).show.ids.imdb, Extended.FULL).execute();
