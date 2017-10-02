@@ -27,7 +27,7 @@
             <artifactId>trakt-java</artifactId>
             <version>5.7.1</version>
         </dependency>
-        //manual gson version
+        <!--manual gson version -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
