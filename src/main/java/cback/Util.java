@@ -10,12 +10,16 @@ import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class Util {
     static IDiscordClient client = MovieBot.getClient();
     static ConfigManager cm = MovieBot.getConfigManager();
     static Color BOT_COLOR = Color.decode("#" + cm.getConfigValue("bot_color"));
+
+    private static final Pattern USER_MENTION_PATTERN = Pattern.compile("^<@!?(\\d+)>$");
 
     /**
      * Returns the bot's color as a Color object
@@ -341,5 +345,24 @@ public class Util {
             reportHome(e);
         }
         return null;
+    }
+
+    /**
+     * returns a count of mentions
+     */
+    public static int mentionsCount(String content) {
+        String[] args = content.split(" ");
+        if (args.length > 0) {
+            int count = 0;
+            for (String arg : args) {
+                Matcher matcher = USER_MENTION_PATTERN.matcher(arg);
+                if (matcher.matches()) {
+                    count++;
+                }
+            }
+            return count;
+        } else {
+            return 0;
+        }
     }
 }
