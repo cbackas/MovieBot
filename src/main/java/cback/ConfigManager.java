@@ -22,6 +22,7 @@ public class ConfigManager {
         //Insert all default config values here. They will be added on startup if they do not exist.
         defaultConfig.put("botToken", "TOKEN");
         defaultConfig.put("traktToken", "TOKEN");
+        defaultConfig.put("tmdbToken", "TOKEN");
         defaultConfig.put("date", "movienight date/time");
         defaultConfig.put("mnID", "movienight announce messageID");
         defaultConfig.put("userCount", "0");
