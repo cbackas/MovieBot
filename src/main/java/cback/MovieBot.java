@@ -42,6 +42,7 @@ public class MovieBot {
     private static final Pattern COMMAND_PATTERN = Pattern.compile("^!([^\\s]+) ?(.*)", Pattern.CASE_INSENSITIVE);
 
     public static final long CBACK_USR_ID = 73416411443113984L;
+    public static final long HOMESERVER_GLD_ID = 256248900124540929L;
 
     public static final long INFO_CH_ID = 263185370424803328L;
     public static final long ANNOUNCEMENT_CH_ID = 263185392818323466L;
@@ -275,18 +276,24 @@ public class MovieBot {
      * Checks for dirty words :o
      */
     public void censorMessages(IMessage message) {
-        if (message.getGuild().getStringID().equals(getHomeGuild().getStringID())) {
+        boolean homeGuild = message.getGuild().getLongID() == MovieBot.HOMESERVER_GLD_ID;
+        boolean staffChannel = message.getChannel().getCategory().getLongID() == 355935127618191370L || message.getChannel().getCategory().getLongID() == 355934857047834626L;
+        boolean staffMember = message.getAuthor().hasRole(message.getClient().getRoleByID(MovieRoles.STAFF.id));
+        if (homeGuild && !staffChannel && !staffMember) {
             List<String> bannedWords = MovieBot.getInstance().getConfigManager().getConfigArray("bannedWords");
             String content = message.getFormattedContent().toLowerCase();
+
+            String word = "";
             Boolean tripped = false;
-            for (String word : bannedWords) {
-                if (content.matches("\\n?.*\\b\\n?" + word + "\\n?\\b.*\\n?.*") || content.matches("\\n?.*\\b\\n?" + word + "s\\n?\\b.*\\n?.*")) {
+            for (String w : bannedWords) {
+                if (content.matches("\\n?.*\\b\\n?" + w + "\\n?\\b.*\\n?.*") || content.matches("\\n?.*\\b\\n?" + w + "s\\n?\\b.*\\n?.*")) {
                     tripped = true;
+                    word = w;
                     break;
                 }
             }
             if (tripped) {
-                message.getChannel().setTypingStatus(true);
+
                 IUser author = message.getAuthor();
 
                 EmbedBuilder bld = new EmbedBuilder();
@@ -298,11 +305,17 @@ public class MovieBot {
                         .withFooterText("Auto-deleted from #" + message.getChannel().getName());
 
                 Util.sendEmbed(message.getGuild().getChannelByID(MESSAGELOG_CH_ID), bld.withColor(Util.getBotColor()).build());
-                Util.sendPrivateMessage(author, "Your message has been automatically removed for a banned word or something");
+
+                StringBuilder sBld = new StringBuilder().append("Your message has been automatically removed for containing a banned word. If this is an error, message a staff member.");
+                if (!word.isEmpty()) {
+                    sBld
+                            .append("\n\n")
+                            .append(word);
+                }
+                Util.sendPrivateEmbed(author, sBld.toString());
 
                 messageCache.add(message.getLongID());
-                message.delete();
-                message.getChannel().setTypingStatus(false);
+                Util.deleteMessage(message);
             }
         }
     }
