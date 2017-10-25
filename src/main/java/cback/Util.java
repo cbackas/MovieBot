@@ -282,9 +282,21 @@ public class Util {
     }
 
 
+    /**
+     * Private messages
+     */
     public static void sendPrivateMessage(IUser user, String message) {
         try {
             user.getClient().getOrCreatePMChannel(user).sendMessage(message);
+        } catch (Exception e) {
+            reportHome(e);
+        }
+    }
+
+    public static void sendPrivateEmbed(IUser user, String message) {
+        try {
+            IChannel pmChannel = user.getClient().getOrCreatePMChannel(user);
+            simpleEmbed(pmChannel, message);
         } catch (Exception e) {
             reportHome(e);
         }
