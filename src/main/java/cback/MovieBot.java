@@ -41,20 +41,20 @@ public class MovieBot {
     public List<String> prefixes = new ArrayList<>();
     private static final Pattern COMMAND_PATTERN = Pattern.compile("^!([^\\s]+) ?(.*)", Pattern.CASE_INSENSITIVE);
 
-    public static final long CBACK_USR_ID = 73416411443113984l;
+    public static final long CBACK_USR_ID = 73416411443113984L;
 
-    public static final long INFO_CH_ID = 263185370424803328l;
-    public static final long ANNOUNCEMENT_CH_ID = 263185392818323466l;
-    public static final long GENERAL_CH_ID = 256248900124540929l;
-    public static final long MESSAGELOG_CH_ID = 337666816383909889l;
-    public static final long SERVERLOG_CH_ID = 261737182543216640l;
-    public static final long STAFF_CH_ID = 226433456060497920l;
-    public static final long DEV_CH_ID = 268510274858778624l;
-    public static final long MUTED_ROLE_ID = 266655441449254914l;
+    public static final long INFO_CH_ID = 263185370424803328L;
+    public static final long ANNOUNCEMENT_CH_ID = 263185392818323466L;
+    public static final long GENERAL_CH_ID = 256248900124540929L;
+    public static final long MESSAGELOG_CH_ID = 337666816383909889L;
+    public static final long SERVERLOG_CH_ID = 261737182543216640L;
+    public static final long STAFF_CH_ID = 226433456060497920L;
+    public static final long DEV_CH_ID = 268510274858778624L;
+    public static final long MUTED_ROLE_ID = 266655441449254914L;
 
-    public static final long ERRORLOG_CH_ID = 346104666796589056l;
-    public static final long BOTLOG_CH_ID = 346483682376286208l;
-    public static final long BOTPM_CH_ID = 346104720903110656l;
+    public static final long ERRORLOG_CH_ID = 346104666796589056L;
+    public static final long BOTLOG_CH_ID = 346483682376286208L;
+    public static final long BOTPM_CH_ID = 346104720903110656L;
 
     private long startTime;
 
