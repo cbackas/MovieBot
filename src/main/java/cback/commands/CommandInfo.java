@@ -8,6 +8,7 @@ import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.EmbedBuilder;
 
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
@@ -52,7 +53,7 @@ public class CommandInfo implements Command {
 
         EmbedBuilder embed = Util.getEmbed(message.getAuthor()).withThumbnail(Util.getAvatar(client.getOurUser()));
         embed.withTitle(guild.getName());
-        embed.appendField("Created: ", guild.getCreationDate().format(formatter), true);
+        embed.appendField("Created: ", guild.getCreationDate().atOffset(ZoneOffset.ofHours(0)).format(formatter), true);
 
         embed.appendField("\u200B", "\u200B", false);
 
@@ -63,13 +64,13 @@ public class CommandInfo implements Command {
         embed.appendField("\u200B", "\u200B", false);
 
         embed.appendField("Bot Uptime: ", MovieBot.getInstance().getUptime(), true);
-        embed.appendField("Our Servers: ", "[`The Lounge`](http://discord.me/lounge)\n[`The Cinema`](https://discord.gg/QeuTNRb)\n[`The Arcade`](discord.gg/Empn64q)", true);
-        embed.appendField("Feed bot developers: ", "[`paypal.me`](paypal.me/cbackas)", true);
+        embed.appendField("Our Servers: ", "[`The Lounge`](http://discord.me/lounge)\n[`The Cinema`](https://discord.gg/QeuTNRb)", true);
+        embed.appendField("Feed bot developers: ", "[`Paypal`](https://www.paypal.me/cbackas)", true);
 
         embed.appendField("\u200B", "\u200B", false);
 
-        embed.appendField("Made By: ", "cback#3986", true);
-        embed.appendField("Source: ", "[`GitHub`](https://github.com/cbackas/MovieBot)", true);
+        embed.appendField("Made By: ", Util.getTag(MovieBot.getClient().getApplicationOwner()), true);
+        embed.appendField("Source: ", "[`GitHub`](https://github.com/cbackas/TVBot)", true);
 
         Util.sendEmbed(message.getChannel(), embed.withColor(Util.getBotColor()).build());
         Util.deleteMessage(message);
