@@ -42,6 +42,8 @@ public class MovieBot {
     public static final long CBACK_USR_ID = 73416411443113984L;
     public static final long HOMESERVER_GLD_ID = 256248900124540929L;
 
+    public static final long SPOILERCHAT_CAT_ID = 355935097502826496L;
+
     public static final long INFO_CH_ID = 263185370424803328L;
     public static final long ANNOUNCEMENT_CH_ID = 263185392818323466L;
     public static final long GENERAL_CH_ID = 256248900124540929L;

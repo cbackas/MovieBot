@@ -62,11 +62,12 @@ public class CommandChannelAdd implements Command {
 
     private String createChannels(IGuild guild, String[] names) {
         StringBuilder mentions = new StringBuilder();
+        ICategory unsorted = guild.getCategoryByID(MovieBot.SPOILERCHAT_CAT_ID);
         resetCounter();
         for (String s : names) {
             try {
                 RequestBuffer.RequestFuture<Boolean> future = RequestBuffer.request(() -> {
-                    IChannel c = guild.createChannel(s);
+                    IChannel c = unsorted.createChannel(s);
                     mentions.append("#" + c.getName() + " ");
                     return true;
                 });
