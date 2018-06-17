@@ -4,6 +4,8 @@ import sx.blah.discord.handle.obj.ActivityType;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.StatusType;
 
+import java.util.Date;
+import java.util.TimeZone;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -40,8 +42,8 @@ public class Scheduler {
         int time = Util.getCurrentTime(); //current epoch time in seconds
 
         //update user count at midnight every night
-        int currentTimeEST = time - 14400; //EST time, subtract 4 hours from UTC
-        int midnightWaitTime = roundUp(currentTimeEST, DAILY_INTERVAL) - currentTimeEST; //seconds until midnight
+        int currentTimeEST = time - getOffset(); //EST time, second offset changes depending on daylight savings
+        int midnightWaitTime = roundUp(currentTimeEST, DAILY_INTERVAL) - currentTimeEST + 45; //seconds until midnight
         exec.scheduleAtFixedRate(() -> {
 
             updateUserCount();
@@ -50,6 +52,18 @@ public class Scheduler {
             bot.getClient().changePresence(StatusType.ONLINE, ActivityType.WATCHING,"all of your messages. Type " + MovieBot.prefix + "help");
 
         }, midnightWaitTime, DAILY_INTERVAL, TimeUnit.SECONDS);
+    }
+
+    private static int getOffset() {
+        //winter - 18000s
+        //summer - 14400s
+
+        boolean inSavingsTime = TimeZone.getTimeZone("US/Eastern").inDaylightTime( new Date() );
+        if (inSavingsTime) {
+            return 14400;
+        } else {
+            return 18000;
+        }
     }
 
 
