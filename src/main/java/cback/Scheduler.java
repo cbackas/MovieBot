@@ -1,6 +1,8 @@
 package cback;
 
+import sx.blah.discord.handle.obj.ActivityType;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.StatusType;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -44,6 +46,8 @@ public class Scheduler {
 
             updateUserCount();
             resetUserChange();
+            //Set status
+            bot.getClient().changePresence(StatusType.ONLINE, ActivityType.WATCHING,"all of your messages. Type " + MovieBot.prefix + "help");
 
         }, midnightWaitTime, DAILY_INTERVAL, TimeUnit.SECONDS);
     }

@@ -6,6 +6,7 @@ import org.reflections.Reflections;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
+import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.*;
@@ -35,7 +36,7 @@ public class MovieBot {
     public static ArrayList<Long> messageCache = new ArrayList<>();
 
     public  static List<Command> registeredCommands = new ArrayList<>();
-    static private String prefix = "!";
+    static public String prefix = "!";
     public List<String> prefixes = new ArrayList<>();
     private static final Pattern COMMAND_PATTERN = Pattern.compile("(?s)^!([^\\s]+) ?(.*)", Pattern.CASE_INSENSITIVE);
 
@@ -174,34 +175,36 @@ public class MovieBot {
              * Forwards the random stuff people PM to the bot - to me
              */
         } else if (message.getChannel().isPrivate()) {
-            EmbedBuilder bld = new EmbedBuilder()
-                    .withColor(Util.getBotColor())
-                    .withTimestamp(System.currentTimeMillis())
-                    .withAuthorName(message.getAuthor().getName() + '#' + message.getAuthor().getDiscriminator())
-                    .withAuthorIcon(message.getAuthor().getAvatarURL())
-                    .withDesc(message.getContent());
-
-            for (IMessage.Attachment a : message.getAttachments()) {
-                bld.withImage(a.getUrl());
-            }
-
-            Util.sendEmbed(client.getChannelByID(BOTPM_CH_ID), bld.build());
+            EmbedObject embed = Util.buildBotPMEmbed(message, 1);
+            Util.sendEmbed(client.getChannelByID(BOTPM_CH_ID), embed);
         } else {
+            //below here are just regular chat messages
             censorMessages(message);
 
             /**
              * Deletes messages/bans users for using too many @ mentions
              */
-            if (Util.mentionsCount(message.getContent()) > 10) {
-                try {
-                    guild.banUser(message.getAuthor(), "Mentioned more than 10 users in a message. Appeal at https://www.reddit.com/r/LoungeBan/", 0);
-                    Util.simpleEmbed(message.getChannel(), message.getAuthor().getDisplayName(guild) + " was just banned for mentioning more than 10 users.");
-                    Util.sendLog(message, "Banned " + message.getAuthor().getName() + "\n**Reason:** Doing too many @ mentions", Color.red);
-                } catch (Exception e) {
-                    Util.reportHome(e);
+            boolean staffMember = message.getAuthor().hasRole(message.getClient().getRoleByID(MovieRoles.STAFF.id));
+            if (!staffMember) {
+                if (Util.mentionsCount(message.getContent()) > 10) {
+                    try {
+                        guild.banUser(message.getAuthor(), "Mentioned more than 10 users in a message. Appeal at https://www.reddit.com/r/LoungeBan/", 0);
+                        Util.simpleEmbed(message.getChannel(), message.getAuthor().getDisplayName(guild) + " was just banned for mentioning more than 10 users.");
+                        Util.sendLog(message, "Banned " + message.getAuthor().getName() + "\n**Reason:** Doing too many @ mentions", Color.red);
+                    } catch (Exception e) {
+                        Util.reportHome(e);
+                    }
+                } else if (Util.mentionsCount(message.getContent()) > 5) {
+                    Util.deleteMessage(message);
                 }
-            } else if (Util.mentionsCount(message.getContent()) > 5) {
-                Util.deleteMessage(message);
+            }
+
+            /**
+             * Messages containing my name go to botpms now too cuz im watching
+             */
+            if (message.getContent().toLowerCase().contains("cback")) {
+                EmbedObject embed = Util.buildBotPMEmbed(message, 2);
+                Util.sendEmbed(client.getChannelByID(BOTPM_CH_ID), embed);
             }
         }
     }
@@ -212,7 +215,7 @@ public class MovieBot {
         client = event.getClient();
 
         //Set status
-        client.changePresence(StatusType.ONLINE, ActivityType.LISTENING, "all of your messages. \n\n Type " + prefix + "help");
+        client.changePresence(StatusType.ONLINE, ActivityType.WATCHING,"all of your messages. Type " + prefix + "help");
 
         startTime = System.currentTimeMillis();
     }
